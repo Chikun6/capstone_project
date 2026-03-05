@@ -1,0 +1,124 @@
+<div class="auth-wrapper min-vh-100 d-flex">
+  <!-- Left Panel -->
+  <div class="left-panel d-none d-md-flex flex-column justify-content-center align-items-start px-5">
+    <h1 class="display-4 fw-black text-primary mb-2">Create Account</h1>
+    <p class="fs-5 fw-medium text-muted-light">We're so excited to have you join us!</p>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="right-panel d-flex flex-column justify-content-center align-items-center px-4 px-md-5 flex-grow-1">
+    <div class="form-card w-100" style="max-width: 540px;">
+
+      <!-- Step 1: Account Info -->
+      <div>
+        <h3 class="fw-bold text-dark m-4">Create account</h3>
+
+        <p class="text-muted-light small mb-3">
+          You are creating an account on <strong class="text-primary">Twitter</strong>
+        </p>
+
+        <form [formGroup]="form">
+          <!-- Email -->
+          <div class="mb-2">
+            <label class="form-label-custom">First Name</label>
+            <div class="input-group-custom d-flex align-items-center px-3 rounded-3">
+              <span class="text-muted me-2">👤</span>
+              <input type="text" class="custom-input flex-grow-1 py-2" placeholder="Enter your first name"
+                formControlName="firstName" />
+            </div>
+            <small class="text-danger" *ngIf="form.get('firstName')?.invalid && form.get('firstName')?.touched">
+              First name is required
+            </small>
+          </div>
+
+          <!-- Last Name -->
+          <div class="mb-2">
+            <label class="form-label-custom">Last Name</label>
+            <div class="input-group-custom d-flex align-items-center px-3 rounded-3">
+              <span class="text-muted me-2">👤</span>
+              <input type="text" class="custom-input flex-grow-1 py-2" placeholder="Enter your last name"
+                formControlName="lastName" />
+            </div>
+            <small class="text-danger" *ngIf="form.get('lastName')?.invalid && form.get('lastName')?.touched">
+              Last name is required
+            </small>
+          </div>
+
+          <!-- Username -->
+          <div class="mb-2">
+            <label class="form-label-custom">Username</label>
+            <div class="input-group-custom d-flex align-items-center px-3 rounded-3">
+              <span class="text-muted me-2">@</span>
+              <input type="text" class="custom-input flex-grow-1 py-2" placeholder="Choose a username"
+                formControlName="username" />
+            </div>
+            <small class="text-danger" *ngIf="form.get('username')?.invalid && form.get('username')?.touched">
+              Username is required
+            </small>
+          </div>
+
+          <!-- Email -->
+          <div class="mb-2">
+            <label class="form-label-custom">Email</label>
+            <div class="input-group-custom d-flex align-items-center px-3 rounded-3">
+              <span class="text-muted me-2">✉️</span>
+              <input type="email" class="custom-input flex-grow-1 py-2" placeholder="Enter your email address"
+                formControlName="email" />
+            </div>
+            <small class="text-danger" *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
+              Valid email required
+            </small>
+          </div>
+
+          <!-- Password -->
+          <div class="mb-2">
+            <label class="form-label-custom">Password</label>
+            <div class="input-group-custom d-flex align-items-center px-3 rounded-3">
+              <span class="text-muted me-2">🔒</span>
+              <input type="password" class="custom-input flex-grow-1 py-2" placeholder="Choose your password"
+                formControlName="password" />
+            </div>
+            <small class="text-danger" *ngIf="form.get('password')?.invalid && form.get('password')?.touched">
+              At least 8 characters required
+            </small>
+          </div>
+
+          <!-- Confirm Password -->
+          <div class="mb-3">
+            <label class="form-label-custom">Confirm Password</label>
+            <div class="input-group-custom d-flex align-items-center px-3 rounded-3"
+              [class.border-danger]="form.get('confirmPassword')?.touched && form.hasError('passwordMismatch')">
+              <span class="text-muted me-2">🔒</span>
+              <input type="password" class="custom-input flex-grow-1 py-2" placeholder="Re-enter your password"
+                formControlName="confirmPassword" />
+            </div>
+            <small class="text-danger"
+              *ngIf="form.get('confirmPassword')?.touched && form.hasError('passwordMismatch')">
+              Passwords do not match
+            </small>
+          </div>
+
+          <p class="text-muted-light small mb-2">
+            By creating an account you agree to the
+            <a href="#" class="text-primary text-decoration-none">Terms of Service</a> and
+            <a href="#" class="text-primary text-decoration-none">Privacy Policy</a>.
+          </p>
+
+          <div class="d-flex justify-content-between">
+            <button type="button" class="btn btn-outline-custom rounded-pill px-4" (click)="goBack()">Back</button>
+            <button type="button" class="btn btn-primary rounded-pill px-5 fw-semibold"
+              (click)="nextStep()">Next</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Footer -->
+      <div class="text-center mt-2 mb-5 pt-3 border-top-custom">
+        <small class="text-muted-light">
+          Already have an account?
+          <a routerLink="/login" class="text-primary text-decoration-none fw-medium">Sign in</a>
+        </small>
+      </div>
+    </div>
+  </div>
+</div>

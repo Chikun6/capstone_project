@@ -1,0 +1,45 @@
+.sidebar-left {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  border-right: 1px solid #e7e7e7;
+  overflow-y: auto;
+}
+
+.avatar-circle-sm {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 0.9rem;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 50px;
+  color: #1a1a2e;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: background 0.15s;
+  margin-bottom: 2px;
+  cursor: pointer;
+}
+
+.nav-item:hover { background: #f0f4ff; }
+.nav-item.active { background: #f0f4ff; font-weight: 700; }
+
+.nav-icon {
+  font-size: 1.1rem;
+  width: 24px;
+  text-align: center;
+}
+
+.new-post-btn {
+  background: #1a85ff;
+  border-color: #1a85ff;
+  padding: 10px 0;
+  font-size: 0.95rem;
+}

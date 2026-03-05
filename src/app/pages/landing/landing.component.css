@@ -1,0 +1,62 @@
+.landing-wrapper {
+  background: linear-gradient(180deg, #b3d4f7 0%, #daeeff 40%, #f0f8ff 70%, #e8f4fb 100%);
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.landing-wrapper::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 55%;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 400'%3E%3Cellipse cx='200' cy='350' rx='250' ry='120' fill='white' opacity='0.9'/%3E%3Cellipse cx='600' cy='380' rx='320' ry='130' fill='white' opacity='0.85'/%3E%3Cellipse cx='1000' cy='360' rx='280' ry='110' fill='white' opacity='0.9'/%3E%3Cellipse cx='1350' cy='370' rx='200' ry='100' fill='white' opacity='0.85'/%3E%3Cellipse cx='400' cy='395' rx='350' ry='140' fill='%23f0f8ff' opacity='0.95'/%3E%3Cellipse cx='900' cy='398' rx='400' ry='145' fill='%23e8f4fb' opacity='0.9'/%3E%3C/svg%3E") bottom center / cover no-repeat;
+  pointer-events: none;
+}
+
+.landing-card {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 560px;
+  padding: 3rem 2.5rem 2.5rem;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+}
+
+.close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+}
+
+.butterfly-logo {
+  font-size: 2.2rem;
+  line-height: 1;
+}
+
+.brand-name {
+  letter-spacing: 0.5px;
+}
+
+.tagline {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  line-height: 1.35;
+}
+
+.animate-fade-in {
+  animation: fadeInUp 0.5s ease both;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+img{
+  width: 70px;
+}

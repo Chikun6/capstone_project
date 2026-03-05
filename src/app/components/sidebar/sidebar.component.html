@@ -1,0 +1,38 @@
+<aside class="sidebar-left d-none d-lg-flex flex-column p-3">
+  <!-- Avatar -->
+  <div class="mb-3 px-2">
+    <div class="avatar-circle-sm bg-primary d-flex align-items-center justify-content-center">
+      <span class="text-white fw-bold">@</span>
+    </div>
+  </div>
+
+  <!-- Nav Links -->
+  <nav class="flex-grow-1">
+    <a class="nav-item" routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">
+      <span class="nav-icon">🏠</span><span class="nav-label">Home</span>
+    </a>
+    <a class="nav-item" routerLinkActive="active">
+      <span class="nav-icon">🔍</span><span class="nav-label">Explore</span>
+    </a>
+    <a class="nav-item" routerLinkActive="active">
+      <span class="nav-icon">🔔</span><span class="nav-label">Notifications</span>
+    </a>
+    <a class="nav-item" routerLinkActive="active">
+      <span class="nav-icon">#</span><span class="nav-label">Feeds</span>
+    </a>
+    <a class="nav-item" routerLink="/follow" routerLinkActive="active">
+      <span class="nav-icon">👥</span><span class="nav-label">Follow Management</span>
+    </a>
+    <a class="nav-item" routerLink="/profile" routerLinkActive="active">
+      <span class="nav-icon">👤</span><span class="nav-label">Profile</span>
+    </a>
+    <a class="nav-item" (click)="logout()" style="cursor:pointer">
+      <span class="nav-icon">⚙️</span><span class="nav-label">Settings</span>
+    </a>
+  </nav>
+
+  <!-- New Post Button -->
+  <button class="btn btn-primary rounded-pill fw-semibold mt-3 new-post-btn" routerLink="/home">
+    ✏️ New Post
+  </button>
+</aside>

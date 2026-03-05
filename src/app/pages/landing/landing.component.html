@@ -1,0 +1,31 @@
+<div class="landing-wrapper d-flex align-items-center justify-content-center min-vh-100">
+  <!-- Cloud background -->
+  <div class="cloud-bg"></div>
+
+
+  <div class="landing-card card shadow-lg border-0 animate-fade-in">
+
+
+    
+    <div class="text-center mb-4">
+      <div class="butterfly-logo mb-2"><img src="assets/logo2.png" ></div>
+      <span class="brand-name fs-1 fw-semibold text-primary">Twitter</span>
+    </div>
+
+    <!-- Tagline -->
+    <div class="text-center mb-5">
+      <h2 class="tagline">Real people.<br>Real conversations.<br><span class="text-muted fw-normal">Social media you control.</span></h2>
+    </div>
+
+    <!-- Actions -->
+    <div class="d-flex flex-column align-items-center gap-3">
+      <button class="btn btn-primary btn-lg rounded-pill px-5 fw-semibold" (click)="goToRegister()">
+        Create account
+      </button>
+      <p class="text-muted small mb-0">
+        Already have an account?
+        <a class="text-primary fw-medium text-decoration-none" (click)="goToLogin()">Sign in</a>
+      </p>
+    </div>
+  </div>
+</div>

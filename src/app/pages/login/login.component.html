@@ -1,0 +1,66 @@
+<div class="auth-wrapper min-vh-100 d-flex">
+  <!-- Left Panel -->
+  <div class="left-panel d-none d-md-flex flex-column justify-content-center align-items-start px-5">
+    <h1 class="display-4 fw-bold text-primary mb-2">Sign in</h1>
+    <p class="fs-5 fw-medium text-dark-50">Enter your username and password</p>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="right-panel d-flex flex-column justify-content-center align-items-center px-4 px-md-5 flex-grow-1">
+    <div class="form-card w-100" style="max-width: 520px;">
+
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <!-- Account -->
+        <div class="mb-3">
+          <label class="form-label text-secondary  fw-semibold">Account Login</label>
+          <div class="input-group input-group-custom">
+            <span class="input-group-text bg-transparent border-0 ps-3 text-primary">@</span>
+            <input
+              type="text"
+              class="form-control border-0 bg-transparent"
+              placeholder="Username or email address"
+              formControlName="identifier"
+            />
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="mb-4">
+          <div class="input-group input-group-custom">
+            <span class="input-group-text bg-transparent border-0 ps-3 text-muted">🔒</span>
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              class="form-control border-0 bg-transparent"
+              placeholder="Password"
+              formControlName="password"
+            />
+            <span class="input-group-text bg-transparent border-0 pe-3">
+              <a href="#" class="text-primary text-decoration-none small fw-medium" (click)="$event.preventDefault()">Forgot?</a>
+            </span>
+          </div>
+        </div>
+
+        <!-- Error -->
+        <div class="alert alert-danger py-2 small" *ngIf="error">{{ error }}</div>
+
+        <!-- Buttons -->
+        <div class="d-flex justify-content-between align-items-center mt-3">
+          <button type="button" class="btn btn-outline-secondary rounded-pill px-4" (click)="goBack()">Back</button>
+          <button type="submit" class="btn btn-primary rounded-pill px-5 fw-semibold" [disabled]="loading">
+            <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+            Sign in
+          </button>
+        </div>
+      </form>
+
+      <!-- Footer -->
+      <div class="text-center mt-4 pt-3 border-top">
+        <small class="text-muted">
+          Don't have an account?
+          <a class="text-primary text-decoration-none fw-medium" (click)="goToRegister()" style="cursor:pointer">Create one</a>
+        </small>
+      </div>
+    </div>
+  </div>
+</div>

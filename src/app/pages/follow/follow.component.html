@@ -1,0 +1,66 @@
+<div class="follow-layout">
+
+  <!-- SHARED SIDEBAR -->
+  <app-sidebar></app-sidebar>
+
+  <!-- MAIN CONTENT -->
+  <main class="follow-main">
+
+    <!-- Header -->
+    <div class="follow-header d-flex align-items-center gap-3 px-4 py-3 border-bottom sticky-top bg-white">
+      <button class="btn btn-sm btn-light rounded-circle back-btn" (click)="goBack()">←</button>
+      <h5 class="mb-0 fw-bold">Follow Management</h5>
+    </div>
+
+    <!-- Tabs -->
+    <div class="d-flex border-bottom px-4">
+      <button class="tab-btn me-4" [class.active]="activeTab === 'followers'" (click)="setTab('followers')">
+        Followers
+        <span class="badge bg-light text-dark ms-1">{{ followers.length }}</span>
+      </button>
+      <button class="tab-btn" [class.active]="activeTab === 'following'" (click)="setTab('following')">
+        Following
+        <span class="badge bg-light text-dark ms-1">{{ following.length }}</span>
+      </button>
+    </div>
+
+    <!-- Followers List -->
+    <div *ngIf="activeTab === 'followers'">
+      <div class="person-item d-flex align-items-center gap-3 px-4 py-3 border-bottom"
+           *ngFor="let person of followers">
+        <img [src]="person.avatar" class="rounded-circle flex-shrink-0"
+             width="48" height="48" [alt]="person.displayName">
+        <div class="flex-grow-1">
+          <div class="fw-bold text-dark">{{ person.displayName }}</div>
+          <div class="text-muted small">@{{ person.handle }}</div>
+          <div class="text-muted small">{{ person.bio }}</div>
+        </div>
+        <button class="btn btn-sm rounded-pill px-3 fw-medium"
+          [class.btn-primary]="!person.isFollowing"
+          [class.btn-outline-secondary]="person.isFollowing"
+          (click)="toggleFollow(person)">
+          {{ person.isFollowing ? 'Following' : 'Follow Back' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Following List -->
+    <div *ngIf="activeTab === 'following'">
+      <div class="person-item d-flex align-items-center gap-3 px-4 py-3 border-bottom"
+           *ngFor="let person of following">
+        <img [src]="person.avatar" class="rounded-circle flex-shrink-0"
+             width="48" height="48" [alt]="person.displayName">
+        <div class="flex-grow-1">
+          <div class="fw-bold text-dark">{{ person.displayName }}</div>
+          <div class="text-muted small">@{{ person.handle }}</div>
+          <div class="text-muted small">{{ person.bio }}</div>
+        </div>
+        <button class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-medium"
+          (click)="toggleFollow(person)">
+          Unfollow
+        </button>
+      </div>
+    </div>
+
+  </main>
+</div>

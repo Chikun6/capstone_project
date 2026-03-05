@@ -1,0 +1,171 @@
+<div class="home-layout">
+
+  <!-- SHARED SIDEBAR -->
+  <app-sidebar></app-sidebar>
+
+  <!-- MAIN FEED -->
+  <main class="feed-main">
+    <!-- Top Header -->
+    <div class="feed-header d-flex align-items-center justify-content-center gap-1 py-2 border-bottom sticky-top bg-white">
+      <span class="butterfly-top">🦋</span>
+      <div class="feed-tabs d-flex gap-4 ms-3">
+        <button class="tab-btn" [class.active]="activeTab === 'discover'" (click)="setTab('discover')">Discover</button>
+        <button class="tab-btn" [class.active]="activeTab === 'following'" (click)="setTab('following')">Following</button>
+        <button class="tab-btn" [class.active]="activeTab === 'video'" (click)="setTab('video')">Video</button>
+      </div>
+    </div>
+
+    <!-- New Post Composer (inline) -->
+    <div class="post-composer d-flex align-items-start gap-3 p-3 border-bottom">
+      <div class="avatar-circle-sm bg-primary d-flex align-items-center justify-content-center flex-shrink-0">
+        <span class="text-white fw-bold small">@</span>
+      </div>
+      <button class="form-control text-start text-muted border-0 bg-transparent shadow-none ps-0" (click)="openNewPost()">
+        What's up?
+      </button>
+      <button class="btn btn-sm btn-outline-secondary rounded" (click)="openNewPost()">🖼️</button>
+    </div>
+
+    <!-- Posts Feed -->
+    <div class="posts-feed">
+      <div class="post-item border-bottom p-3" *ngFor="let post of posts">
+        <div class="d-flex gap-3">
+          <img [src]="post.author.avatar || 'https://i.pravatar.cc/40?u=' + post.author.handle"
+               class="post-avatar rounded-circle flex-shrink-0"
+               width="44" height="44"
+               [alt]="post.author.displayName">
+
+          <div class="flex-grow-1 min-w-0">
+            <div class="d-flex align-items-center gap-1 flex-wrap mb-1">
+              <span class="fw-bold text-dark small">{{ post.author.displayName }}</span>
+              <span *ngIf="post.author.verified" class="text-primary small">✓</span>
+              <span class="text-muted small">@{{ post.author.handle }}</span>
+              <span class="text-muted small">·</span>
+              <span class="text-muted small">{{ getTimeAgo(post.createdAt) }}</span>
+            </div>
+
+            <p class="post-text mb-2">{{ post.text }}</p>
+
+            <p class="mb-2" *ngIf="post.hashtags?.length">
+              <span class="text-primary fw-medium small me-1" *ngFor="let tag of post.hashtags">{{ tag }}</span>
+            </p>
+
+            <img *ngIf="post.image" [src]="post.image" class="post-image rounded-3 mb-2 w-100" [alt]="post.text">
+
+            <div class="post-actions d-flex gap-4 mt-2">
+              <button class="action-btn text-muted" (click)="toggleRepost(post)" [class.active-repost]="post.reposted">
+                <span>🔁</span> {{ formatCount(post.reposts) }}
+              </button>
+              <button class="action-btn text-muted">
+                <span>💬</span> {{ formatCount(post.replies) }}
+              </button>
+              <button class="action-btn" (click)="toggleLike(post)" [class.liked]="post.liked">
+                <span>{{ post.liked ? '❤️' : '🤍' }}</span> {{ formatCount(post.likes) }}
+              </button>
+              <button class="action-btn text-muted ms-auto">🔖</button>
+              <button class="action-btn text-muted">↗️</button>
+              <button class="action-btn text-muted">···</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- RIGHT SIDEBAR -->
+  <aside class="sidebar-right d-none d-xl-block p-3">
+    <div class="input-group mb-4">
+      <span class="input-group-text bg-light border-0 rounded-start-pill ps-3">🔍</span>
+      <input type="text" class="form-control bg-light border-0 rounded-end-pill" placeholder="Search">
+    </div>
+
+    <div class="mb-4">
+      <div class="feed-filter-item active d-flex align-items-center gap-2 px-3 py-2 rounded-3 mb-1">
+        <span>🔵</span> Discover
+      </div>
+      <div class="feed-filter-item d-flex align-items-center gap-2 px-3 py-2 rounded-3 mb-1">
+        <span>📋</span> Following
+      </div>
+      <div class="feed-filter-item d-flex align-items-center gap-2 px-3 py-2 rounded-3 mb-1">
+        <span>📹</span> Video
+      </div>
+      <div class="feed-filter-item d-flex align-items-center gap-2 px-3 py-2 rounded-3 text-primary">
+        <span>+</span> More feeds
+      </div>
+    </div>
+
+    <div class="trending-card card border-0 rounded-4 p-3">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <span class="fw-bold">📈 Trending</span>
+        <span class="text-muted">···</span>
+      </div>
+      <div class="trending-item py-2 border-bottom" *ngFor="let item of ['World Book Day','Hammer Films','Kelsey Plum','Thekla','Big Brother Brasil']; let i = index">
+        <span class="text-muted small me-2">{{ i + 1 }}.</span>
+        <span class="text-dark fw-medium small">{{ item }}</span>
+      </div>
+    </div>
+
+    <div class="mt-3">
+      <small class="text-muted">
+        <a href="#" class="text-muted text-decoration-none me-2">Feedback</a>·
+        <a href="#" class="text-muted text-decoration-none mx-2">Privacy</a>·
+        <a href="#" class="text-muted text-decoration-none mx-2">Terms</a>·
+        <a href="#" class="text-muted text-decoration-none ms-2">Help</a>
+      </small>
+    </div>
+  </aside>
+</div>
+
+<!-- NEW POST MODAL -->
+<div class="modal-overlay" *ngIf="showNewPostModal" (click)="closeNewPost()">
+  <div class="new-post-modal card shadow-lg border-0 rounded-4 p-4" (click)="$event.stopPropagation()">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <button class="btn btn-link text-decoration-none text-primary p-0 fw-medium" (click)="closeNewPost()">Cancel</button>
+      <div class="d-flex gap-3">
+        <button class="btn btn-link text-decoration-none text-muted p-0">Drafts</button>
+        <button class="btn btn-primary rounded-pill px-4 fw-semibold" (click)="submitPost()" [disabled]="!newPostText.trim() || postLoading">
+          Post
+        </button>
+      </div>
+    </div>
+
+    <div class="d-flex gap-3">
+      <div class="avatar-circle-sm bg-primary d-flex align-items-center justify-content-center flex-shrink-0">
+        <span class="text-white fw-bold small">@</span>
+      </div>
+      <textarea class="form-control border-0 shadow-none flex-grow-1 resize-none"
+        placeholder="What's up?"
+        rows="5"
+        [value]="newPostText"
+        (input)="newPostText = $any($event.target).value"
+        maxlength="300">
+      </textarea>
+    </div>
+
+    <hr>
+    <div class="d-flex align-items-center justify-content-between">
+      <div class="d-flex gap-3 text-muted">
+        <button class="btn btn-sm btn-link text-muted">🖼️</button>
+        <button class="btn btn-sm btn-link text-muted">GIF</button>
+        <button class="btn btn-sm btn-link text-muted">😊</button>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <span class="text-muted small">{{ 300 - newPostText.length }}</span>
+        <div class="char-circle">
+          <svg viewBox="0 0 36 36" width="28" height="28">
+            <circle cx="18" cy="18" r="15" fill="none" stroke="#e0e0e0" stroke-width="3"/>
+            <circle cx="18" cy="18" r="15" fill="none" stroke="#1a85ff" stroke-width="3"
+              [attr.stroke-dasharray]="94.2"
+              [attr.stroke-dashoffset]="94.2 * (1 - newPostText.length / 300)"
+              transform="rotate(-90 18 18)"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile FAB -->
+<button class="mobile-fab btn btn-primary rounded-circle d-lg-none shadow-lg" (click)="openNewPost()">
+  ✏️
+</button>
