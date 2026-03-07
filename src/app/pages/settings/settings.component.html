@@ -1,0 +1,37 @@
+<div class="page-layout">
+  <app-sidebar></app-sidebar>
+
+  <main class="page-main">
+    <div class="sticky-top bg-white border-bottom px-4 py-3 d-flex align-items-center gap-3" style="z-index:10;">
+      <button class="btn btn-link p-0 text-dark fs-5" (click)="goBack()">←</button>
+      <span class="fw-bold fs-5">Settings</span>
+    </div>
+
+    <!-- Profile Card -->
+    <div class="text-center px-4 py-4 border-bottom">
+      <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center mx-auto mb-3" style="width:72px;height:72px;">
+        <span class="text-white fw-bold fs-4">@</span>
+      </div>
+      <div class="fw-bold fs-5">sourav06.bsky.social</div>
+      <div class="text-muted small">@sourav06.bsky.social</div>
+    </div>
+
+    <!-- Add Account -->
+    <div class="settings-item border-bottom px-4 py-3 d-flex align-items-center gap-3">
+      <span>👤</span><span class="fw-medium">Add another account</span>
+    </div>
+
+    <div class="settings-item border-bottom px-4 py-3 d-flex align-items-center justify-content-between" *ngFor="let item of settingsItems">
+      <div class="d-flex align-items-center gap-3">
+        <span>{{ item.icon }}</span><span class="fw-medium">{{ item.label }}</span>
+      </div>
+      <span class="text-muted">›</span>
+    </div>
+
+    <div class="px-4 py-4">
+      <button class="btn btn-outline-danger rounded-pill px-4" (click)="logout()">Sign out</button>
+    </div>
+  </main>
+
+  <app-right-sidebar></app-right-sidebar>
+</div>

@@ -1,18 +1,18 @@
 export interface Post {
   id: string;
-  author: {
-    handle: string;
-    displayName: string;
-    avatar: string;
-    verified?: boolean;
-  };
   text: string;
-  hashtags?: string[];
   image?: string;
+  hashtags?: string[];
   likes: number;
   reposts: number;
   replies: number;
-  createdAt: Date;
-  liked: boolean;
-  reposted: boolean;
+  liked?: boolean;
+  reposted?: boolean;
+  createdAt: string;
+  author: {
+    displayName: string;
+    handle: string;
+    avatar?: string;
+    verified?: boolean;
+  };
 }

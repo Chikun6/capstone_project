@@ -1,6 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -8,10 +7,16 @@ import { AuthService } from '../../services/auth.service';
   styleUrls: ['./sidebar.component.css']
 })
 export class SidebarComponent {
-  constructor(private router: Router, private authService: AuthService) {}
-
-  logout(): void {
-    this.authService.logout();
-    this.router.navigate(['/']);
+  @Output() newPostClicked = new EventEmitter<void>();
+  constructor(private router: Router) {}
+  logout() { this.router.navigate(['/']); }
+  openNewPost() {
+    // If there's a listener (home page), emit to it
+    // Otherwise navigate to home
+    if (this.newPostClicked.observers.length > 0) {
+      this.newPostClicked.emit();
+    } else {
+      this.router.navigate(['/home']);
+    }
   }
 }

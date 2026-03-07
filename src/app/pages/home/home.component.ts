@@ -1,64 +1,68 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { PostService } from '../../services/post.service';
-import { AuthService } from '../../services/auth.service';
 import { Post } from '../../models/post.model';
-import { User } from '../../models/user.model';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
-export class HomePageComponent implements OnInit {
+export class HomeComponent implements OnInit {
   posts: Post[] = [];
-  currentUser: User | null = null;
-  activeTab: 'discover' | 'following' | 'video' = 'discover';
+  activeTab = 'discover';
   showNewPostModal = false;
   newPostText = '';
   postLoading = false;
+  peopleSearch = '';
 
-  constructor(
-    private postService: PostService,
-    private authService: AuthService,
-    private router: Router
-  ) {}
+  suggestedPeople = [
+    { name: 'Alice Johnson', handle: 'alicej', following: false },
+    { name: 'Bob Kumar', handle: 'bobkumar', following: false },
+    { name: 'Clara Swift', handle: 'claraswift', following: true },
+    { name: 'Dev Patel', handle: 'devpatel', following: false },
+    { name: 'Eva Chen', handle: 'evachen', following: false },
+  ];
+
+  filteredPeople = [...this.suggestedPeople];
+
+  constructor(private postService: PostService) {}
 
   ngOnInit() {
-    this.currentUser = this.authService.currentUser;
-    this.loadPosts();
-  }
-
-  loadPosts() {
     this.postService.getPosts().subscribe(posts => this.posts = posts);
   }
 
-  setTab(tab: 'discover' | 'following' | 'video') { this.activeTab = tab; }
-
-  toggleLike(post: Post) { this.postService.toggleLike(post.id); }
-  toggleRepost(post: Post) { this.postService.toggleRepost(post.id); }
-
+  setTab(tab: string) { this.activeTab = tab; }
   openNewPost() { this.showNewPostModal = true; }
-  closeNewPost() { this.showNewPostModal = false; this.newPostText = ''; }
+  closeNewPost() { this.showNewPostModal = false; }
+
+  filterPeople() {
+    const q = this.peopleSearch.toLowerCase();
+    this.filteredPeople = this.suggestedPeople.filter(p =>
+      p.name.toLowerCase().includes(q) || p.handle.toLowerCase().includes(q)
+    );
+  }
 
   submitPost() {
     if (!this.newPostText.trim()) return;
     this.postLoading = true;
-    this.postService.createPost(this.newPostText).subscribe(post => {
-      this.posts.unshift(post);
-      this.postLoading = false;
-      this.closeNewPost();
-    });
+    setTimeout(() => {
+      this.postService.createPost(this.newPostText).subscribe(post => {
+        this.posts.unshift(post);
+        this.newPostText = '';
+        this.postLoading = false;
+        this.closeNewPost();
+      });
+    }, 400);
   }
 
-  getTimeAgo(date: Date): string {
-    const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
-    if (seconds < 60) return `${seconds}s`;
-    const minutes = Math.floor(seconds / 60);
-    if (minutes < 60) return `${minutes}m`;
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours}h`;
-    return `${Math.floor(hours / 24)}d`;
+  toggleLike(post: Post) {
+    post.liked = !post.liked;
+    post.likes += post.liked ? 1 : -1;
+  }
+
+  toggleRepost(post: Post) {
+    post.reposted = !post.reposted;
+    post.reposts += post.reposted ? 1 : -1;
   }
 
   formatCount(n: number): string {

@@ -4,16 +4,21 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LandingPageComponent } from './pages/landing/landing.component';
 import { LoginPageComponent } from './pages/login/login.component';
 import { RegisterPageComponent } from './pages/register/register.component';
-import { HomePageComponent } from './pages/home/home.component';
+import { HomeComponent } from './pages/home/home.component';
 import { FollowPageComponent } from './pages/follow/follow.component';
 import { ProfilePageComponent } from './pages/profile/profile.component';
+import { ExploreComponent } from './pages/explore/explore.component';
+import { SettingsComponent } from './pages/settings/settings.component';
+import { NotificationsComponent } from './pages/notifications/notifications.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
+import { RightSidebarComponent } from './components/right-sidebar/right-sidebar.component';
 
 @NgModule({
   declarations: [
@@ -21,10 +26,14 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
     LandingPageComponent,
     LoginPageComponent,
     RegisterPageComponent,
-    HomePageComponent,
+    HomeComponent,
     FollowPageComponent,
     ProfilePageComponent,
-    SidebarComponent
+    ExploreComponent,
+    SettingsComponent,
+    NotificationsComponent,
+    SidebarComponent,
+    RightSidebarComponent
   ],
   imports: [
     BrowserModule,
@@ -33,7 +42,8 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
     AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,
-    HttpClientModule
+    HttpClientModule,
+    NgbModule
   ],
   providers: [],
   bootstrap: [AppComponent]

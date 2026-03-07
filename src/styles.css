@@ -1,19 +1,26 @@
-/* Import Bootstrap */
-@import 'bootstrap/dist/css/bootstrap.min.css';
-
-* {
-  box-sizing: border-box;
-}
-
+* { box-sizing: border-box; }
 body {
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   background: #ffffff;
   color: #1a1a2e;
   margin: 0;
 }
+a { cursor: pointer; text-decoration: none; }
 
-a { cursor: pointer; }
+/* Shared page layout */
+.page-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr 300px;
+  min-height: 100vh;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.page-main {
+  border-left: 1px solid #e7e7e7;
+  border-right: 1px solid #e7e7e7;
+  min-height: 100vh;
+}
 
 ::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #d0d0d0; border-radius: 4px; }

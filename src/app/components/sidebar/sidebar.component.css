@@ -1,9 +1,16 @@
+:host {
+  display: contents;
+}
+
 .sidebar-left {
   position: sticky;
   top: 0;
   height: 100vh;
   border-right: 1px solid #e7e7e7;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
 }
 
 .avatar-circle-sm {
@@ -42,4 +49,5 @@
   border-color: #1a85ff;
   padding: 10px 0;
   font-size: 0.95rem;
+  width: 100%;
 }

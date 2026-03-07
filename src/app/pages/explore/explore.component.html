@@ -1,0 +1,74 @@
+<div class="page-layout">
+  <app-sidebar></app-sidebar>
+
+  <main class="page-main">
+    <div class="sticky-top bg-white border-bottom p-3" style="z-index:10;">
+      <div class="search-inner">
+        <span>🔍</span>
+        <input type="text" class="search-inp" placeholder="Search posts, people, or topics..."
+          [(ngModel)]="searchQuery" />
+        <button class="btn btn-sm btn-primary rounded-pill px-3" *ngIf="searchQuery" (click)="searchQuery=''">Clear</button>
+      </div>
+    </div>
+
+    <div class="d-flex border-bottom px-3">
+      <button class="filter-tab" [class.active]="activeFilter==='top'" (click)="setFilter('top')">Top</button>
+      <button class="filter-tab" [class.active]="activeFilter==='latest'" (click)="setFilter('latest')">Latest</button>
+      <button class="filter-tab" [class.active]="activeFilter==='media'" (click)="setFilter('media')">Media</button>
+      <button class="filter-tab" [class.active]="activeFilter==='feeds'" (click)="setFilter('feeds')">Feeds</button>
+    </div>
+
+    <div *ngIf="searchQuery">
+      <div class="px-3 pt-3 pb-1 text-muted small fw-semibold">Results for "{{ searchQuery }}"</div>
+      <div class="post-result border-bottom p-3" *ngFor="let r of filteredResults">
+        <div class="d-flex gap-3">
+          <img [src]="'https://i.pravatar.cc/44?u=' + r.handle" class="rounded-circle flex-shrink-0" width="44" height="44">
+          <div>
+            <div class="d-flex gap-2 align-items-center mb-1">
+              <span class="fw-bold small">{{ r.author }}</span>
+              <span class="text-muted small">· {{ r.time }}</span>
+            </div>
+            <p class="mb-2" style="font-size:0.95rem;">{{ r.text }}</p>
+            <div class="d-flex gap-4 text-muted" style="font-size:0.82rem;">
+              <span>🔁 {{ r.reposts }}</span><span>❤️ {{ r.likes }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="text-center py-5 text-muted" *ngIf="filteredResults.length === 0">No results found</div>
+    </div>
+
+    <div *ngIf="!searchQuery">
+      <div class="px-3 pt-4 pb-2 fw-bold" style="font-size:1.1rem;">📈 Trending now</div>
+      <div class="trending-row border-bottom px-3 py-3 d-flex align-items-center justify-content-between"
+        *ngFor="let t of trendingTopics">
+        <div>
+          <div class="d-flex align-items-center gap-2 mb-1">
+            <span class="text-muted small">{{ t.rank }}. {{ t.category }}</span>
+            <span class="badge-hot" *ngIf="t.badge === 'Hot'">🔥 Hot</span>
+            <span class="badge-new" *ngIf="t.badge === 'New'">📈 New</span>
+          </div>
+          <div class="fw-semibold">{{ t.title }}</div>
+          <div class="text-muted small">{{ t.posts }} posts</div>
+        </div>
+        <span class="text-muted">›</span>
+      </div>
+
+      <div class="px-3 pt-4 pb-2 fw-bold" style="font-size:1.1rem;">✨ Discover new feeds</div>
+      <div class="mx-3 mb-3 card border rounded-4 p-3" *ngFor="let f of feeds">
+        <div class="d-flex align-items-start gap-3">
+          <div class="feed-icon">{{ f.icon }}</div>
+          <div class="flex-grow-1">
+            <div class="fw-bold">{{ f.name }}</div>
+            <div class="text-muted small mb-1">Feed by @{{ f.handle }}</div>
+            <p class="mb-2" style="font-size:0.88rem;">{{ f.desc }}</p>
+            <div class="text-primary small">Liked by {{ f.likes }} users</div>
+          </div>
+          <button class="btn btn-sm btn-outline-primary rounded-pill px-3">📌 Pin feed</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <app-right-sidebar></app-right-sidebar>
+</div>

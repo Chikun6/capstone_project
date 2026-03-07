@@ -1,0 +1,30 @@
+<div class="page-layout">
+  <app-sidebar></app-sidebar>
+
+  <main class="page-main">
+    <div class="sticky-top bg-white border-bottom px-4 py-3" style="z-index:10;">
+      <h5 class="fw-bold mb-0">Notifications</h5>
+    </div>
+
+    <div class="d-flex border-bottom px-3">
+      <button class="filter-tab" [class.active]="activeTab==='all'" (click)="activeTab='all'">All</button>
+      <button class="filter-tab" [class.active]="activeTab==='mentions'" (click)="activeTab='mentions'">Mentions</button>
+    </div>
+
+    <div class="notif-item border-bottom px-4 py-3 d-flex align-items-start gap-3"
+      *ngFor="let n of filtered">
+      <div class="notif-type-icon">{{ icon(n.type) }}</div>
+      <img [src]="'https://i.pravatar.cc/40?u=' + n.handle" class="rounded-circle flex-shrink-0" width="40" height="40">
+      <div class="flex-grow-1">
+        <div class="mb-1">
+          <span class="fw-bold small">{{ n.user }}</span>
+          <span class="text-muted small"> {{ n.text }}</span>
+          <span class="text-muted small float-end">{{ n.time }}</span>
+        </div>
+        <div class="text-muted small" *ngIf="n.post" style="font-style:italic;">"{{ n.post }}"</div>
+      </div>
+    </div>
+  </main>
+
+  <app-right-sidebar></app-right-sidebar>
+</div>

@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { Post } from '../models/post.model';
 
@@ -7,56 +6,34 @@ import { Post } from '../models/post.model';
 export class PostService {
   private mockPosts: Post[] = [
     {
-      id: '1',
-      author: { handle: 'digitalprimate.bsky.social', displayName: 'Digital Primate', avatar: 'https://i.pravatar.cc/40?img=1' },
-      text: 'Good morning from Haarlem. Beautiful day in the city! ☀️',
+      id: '1', text: 'Captured this incredible sunrise over the mountains this morning. Nature never stops amazing me 🏔️',
+      hashtags: ['#NaturePhotography'],
+      likes: 1200, reposts: 456, replies: 89, liked: false, reposted: false,
+      createdAt: '3h',
+      author: { displayName: 'Nature Lens', handle: 'naturephotos.bsky.social', verified: true }
+    },
+    {
+      id: '2', text: 'Good morning from Haarlem. Beautiful day in the city! 🌞',
       hashtags: ['#GoodMorningFromHaarlem'],
-      image: 'https://picsum.photos/seed/haarlem/600/300',
-      likes: 245,
-      reposts: 11,
-      replies: 5,
-      createdAt: new Date(Date.now() - 56 * 60 * 1000),
-      liked: false,
-      reposted: false
+      likes: 245, reposts: 11, replies: 5, liked: false, reposted: false,
+      createdAt: '56m',
+      author: { displayName: 'Digital Primate', handle: 'digitalprimate.bsky.social' }
     },
     {
-      id: '2',
-      author: { handle: 'forbes.com', displayName: 'Forbes', avatar: 'https://i.pravatar.cc/40?img=2', verified: true },
-      text: 'Philippine Tycoon Tony Tan Caktiong\'s Jollibee-Backed Highlands Coffee Mulls Vietnam IPO',
-      image: 'https://picsum.photos/seed/forbes/600/300',
-      likes: 89,
-      reposts: 34,
-      replies: 12,
-      createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
-      liked: false,
-      reposted: false
+      id: '3', text: 'Big news in AI today — new models dropping left and right. The space is moving so fast 🚀',
+      hashtags: ['#AI', '#Tech'],
+      likes: 890, reposts: 234, replies: 67, liked: false, reposted: false,
+      createdAt: '1h',
+      author: { displayName: 'Tech Daily', handle: 'techdaily.bsky.social', verified: true }
     },
     {
-      id: '3',
-      author: { handle: 'techbuzz.bsky.social', displayName: 'Tech Buzz', avatar: 'https://i.pravatar.cc/40?img=3' },
-      text: 'The future of decentralized social media is here. The AT Protocol is changing everything we know about how online communities work. 🦋',
-      likes: 512,
-      reposts: 203,
-      replies: 47,
-      createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
-      liked: false,
-      reposted: false
+      id: '4', text: 'Six Nations update: Ireland leading in an absolute thriller of a match! 🏉',
+      hashtags: ['#SixNations', '#Rugby'],
+      likes: 3400, reposts: 812, replies: 204, liked: false, reposted: false,
+      createdAt: '30m',
+      author: { displayName: 'Sports Hub', handle: 'sportshub.bsky.social' }
     },
-    {
-      id: '4',
-      author: { handle: 'naturephotos.bsky.social', displayName: 'Nature Lens', avatar: 'https://i.pravatar.cc/40?img=4' },
-      text: 'Captured this incredible sunrise over the mountains this morning. Nature never stops amazing me 🏔️',
-      image: 'https://picsum.photos/seed/nature/600/300',
-      likes: 1204,
-      reposts: 456,
-      replies: 89,
-      createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000),
-      liked: false,
-      reposted: false
-    }
   ];
-
-  constructor(private http: HttpClient) {}
 
   getPosts(): Observable<Post[]> {
     return of(this.mockPosts);
@@ -65,32 +42,13 @@ export class PostService {
   createPost(text: string): Observable<Post> {
     const newPost: Post = {
       id: Date.now().toString(),
-      author: { handle: 'you.bsky.social', displayName: 'You', avatar: '' },
       text,
-      likes: 0,
-      reposts: 0,
-      replies: 0,
-      createdAt: new Date(),
-      liked: false,
-      reposted: false
+      likes: 0, reposts: 0, replies: 0,
+      liked: false, reposted: false,
+      createdAt: 'Just now',
+      author: { displayName: 'You', handle: 'yourhandle.bsky.social' }
     };
     this.mockPosts.unshift(newPost);
     return of(newPost);
-  }
-
-  toggleLike(postId: string): void {
-    const post = this.mockPosts.find(p => p.id === postId);
-    if (post) {
-      post.liked = !post.liked;
-      post.likes += post.liked ? 1 : -1;
-    }
-  }
-
-  toggleRepost(postId: string): void {
-    const post = this.mockPosts.find(p => p.id === postId);
-    if (post) {
-      post.reposted = !post.reposted;
-      post.reposts += post.reposted ? 1 : -1;
-    }
   }
 }
