@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { PostService } from '../../services/post.service';
+import { AuthService } from '../../services/auth.service';
+import { UserService } from '../../services/user.service';
+import { MediaService } from '../../services/media.service';
 import { Post } from '../../models/post.model';
 
 @Component({
@@ -9,64 +13,161 @@ import { Post } from '../../models/post.model';
 })
 export class HomeComponent implements OnInit {
   posts: Post[] = [];
-  activeTab = 'discover';
+  activeTab = 'for_you';
   showNewPostModal = false;
   newPostText = '';
   postLoading = false;
-  peopleSearch = '';
+  currentUser: any = null;
+  currentUserAvatarUrl = '';
+  charCount = 0;
+  maxChars = 280;
+  selectedMediaFile: File | null = null;
+  selectedMediaPreview = '';
+  postError = '';
 
-  suggestedPeople = [
-    { name: 'Alice Johnson', handle: 'alicej', following: false },
-    { name: 'Bob Kumar', handle: 'bobkumar', following: false },
-    { name: 'Clara Swift', handle: 'claraswift', following: true },
-    { name: 'Dev Patel', handle: 'devpatel', following: false },
-    { name: 'Eva Chen', handle: 'evachen', following: false },
-  ];
-
-  filteredPeople = [...this.suggestedPeople];
-
-  constructor(private postService: PostService) {}
+  constructor(
+    private postService: PostService,
+    private authService: AuthService,
+    private userService: UserService,
+    private mediaService: MediaService,
+    private router: Router
+  ) {}
 
   ngOnInit() {
-    this.postService.getPosts().subscribe(posts => this.posts = posts);
+    if (!this.authService.isLoggedIn) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    const userId = this.authService.currentUserId!;
+    this.userService.getUserById(userId).subscribe(user => {
+      this.currentUser = user;
+      this.currentUserAvatarUrl = user?.profile_picture_url || `https://i.pravatar.cc/40?u=${user?.username}`;
+    });
+    this.loadPosts();
   }
 
-  setTab(tab: string) { this.activeTab = tab; }
-  openNewPost() { this.showNewPostModal = true; }
-  closeNewPost() { this.showNewPostModal = false; }
+  loadPosts() {
+    this.postService.getAllPosts().subscribe(posts => this.posts = posts);
+  }
 
-  filterPeople() {
-    const q = this.peopleSearch.toLowerCase();
-    this.filteredPeople = this.suggestedPeople.filter(p =>
-      p.name.toLowerCase().includes(q) || p.handle.toLowerCase().includes(q)
-    );
+  setTab(tab: string) {
+    this.activeTab = tab;
+    this.loadPosts();
+  }
+
+  openNewPost() { this.showNewPostModal = true; }
+  closeNewPost() {
+    this.showNewPostModal = false;
+    this.newPostText = '';
+    this.charCount = 0;
+    this.selectedMediaFile = null;
+    this.selectedMediaPreview = '';
+    this.postError = '';
+  }
+
+  onTextChange() {
+    this.charCount = this.newPostText.length;
+  }
+
+  onMediaPicked(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) { alert('File too large. Max 10MB.'); return; }
+    this.selectedMediaFile = file;
+    const reader = new FileReader();
+    reader.onload = () => { this.selectedMediaPreview = reader.result as string; };
+    reader.readAsDataURL(file);
+  }
+
+  removeMedia() {
+    this.selectedMediaFile = null;
+    this.selectedMediaPreview = '';
   }
 
   submitPost() {
-    if (!this.newPostText.trim()) return;
+    this.postError = '';
+    if (!this.newPostText.trim()) { this.postError = 'Tweet cannot be empty.'; return; }
+    if (this.newPostText.length > this.maxChars) { this.postError = 'Tweet exceeds 280 characters.'; return; }
     this.postLoading = true;
-    setTimeout(() => {
-      this.postService.createPost(this.newPostText).subscribe(post => {
-        this.posts.unshift(post);
-        this.newPostText = '';
-        this.postLoading = false;
-        this.closeNewPost();
+    const userId = this.authService.currentUserId!;
+
+    const doCreate = (mediaIds: string[]) => {
+      this.postService.createPost(this.newPostText, userId, mediaIds).subscribe({
+        next: (post) => {
+          this.posts.unshift(post);
+          this.postLoading = false;
+          this.closeNewPost();
+        },
+        error: () => {
+          this.postLoading = false;
+          this.postError = 'Failed to post. Please try again.';
+        }
       });
-    }, 400);
+    };
+
+    if (this.selectedMediaFile) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.mediaService.uploadMedia({
+          user_id: userId,
+          tweet_id: null,
+          media_name: this.selectedMediaFile!.name,
+          media_type: this.selectedMediaFile!.type,
+          media_url: reader.result as string,
+          purpose: 'tweet_media'
+        }).subscribe(media => {
+          doCreate(media ? [media.id] : []);
+        });
+      };
+      reader.readAsDataURL(this.selectedMediaFile);
+    } else {
+      doCreate([]);
+    }
   }
 
   toggleLike(post: Post) {
-    post.liked = !post.liked;
-    post.likes += post.liked ? 1 : -1;
+    const userId = this.authService.currentUserId!;
+    this.postService.likePost(post, userId).subscribe(updated => {
+      post.liked = updated.liked;
+      post.likes = updated.likes;
+    });
   }
 
   toggleRepost(post: Post) {
-    post.reposted = !post.reposted;
-    post.reposts += post.reposted ? 1 : -1;
+    const userId = this.authService.currentUserId!;
+    this.postService.repostTweet(post, userId).subscribe(updated => {
+      post.reposted = updated.reposted;
+      post.reposts = updated.reposts;
+    });
+  }
+
+  deletePost(post: Post) {
+    if (!confirm('Delete this tweet?')) return;
+    this.postService.deletePost(post.id).subscribe(() => {
+      this.posts = this.posts.filter(p => p.id !== post.id);
+    });
+  }
+
+  goToUserProfile(post: Post) {
+    if (post.author.id === this.currentUser?.id) {
+      this.router.navigate(['/profile']);
+    } else {
+      this.router.navigate(['/user', post.author.handle]);
+    }
+  }
+
+  goToTweet(post: Post) {
+    this.router.navigate(['/tweet', post.id]);
   }
 
   formatCount(n: number): string {
     if (n >= 1000) return (n / 1000).toFixed(1) + 'k';
-    return n.toString();
+    return n?.toString() || '0';
+  }
+
+  get charCountColor(): string {
+    if (this.charCount > 260) return 'text-danger';
+    if (this.charCount > 230) return 'text-warning';
+    return 'text-muted';
   }
 }

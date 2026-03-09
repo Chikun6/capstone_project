@@ -1,51 +1,53 @@
 <aside class="right-sidebar">
-  <!-- Search People -->
-  <div class="search-wrap mb-4">
-    <span>🔍</span>
-    <input type="text" placeholder="Search people..." [(ngModel)]="peopleSearch" (input)="filterPeople()" />
+  <!-- Search -->
+  <div class="rs-search mb-3">
+    <span class="rs-search-icon">🔍</span>
+    <input type="text" class="rs-search-input" placeholder="Search people..."
+      [(ngModel)]="peopleSearch" (input)="filterPeople()" />
   </div>
 
-  <!-- Suggested Profiles -->
-  <div class="card border-0 rounded-4 mb-3" style="background:#f7f9fc;">
-    <div class="card-body p-3">
-      <div class="fw-bold small mb-3">👤 Suggested for you</div>
-      <div class="suggested-profile" *ngFor="let p of filteredPeople">
-        <img [src]="'https://i.pravatar.cc/36?u=' + p.handle" class="rounded-circle flex-shrink-0" width="36" height="36" [alt]="p.name">
-        <div class="flex-grow-1 min-w-0">
-          <div class="fw-semibold small text-dark text-truncate">{{ p.name }}</div>
-          <div class="text-muted" style="font-size:0.78rem;">@{{ p.handle }}</div>
+  <!-- Suggested Profiles — only people you don't follow yet -->
+  <div class="rs-card mb-3">
+    <div class="rs-card-title">👤 Suggested for you</div>
+
+    <div *ngIf="loading" class="text-center py-3">
+      <div class="spinner-border spinner-border-sm text-secondary" style="width:18px;height:18px;"></div>
+    </div>
+
+    <ng-container *ngIf="!loading">
+      <div class="rs-person" *ngFor="let p of filteredPeople">
+        <img [src]="p.profile_picture_url || ('https://i.pravatar.cc/36?u=' + p.username)"
+          class="rs-avatar" [alt]="p.first_name">
+        <div class="rs-person-info">
+          <div class="rs-person-name">{{ p.first_name }} {{ p.last_name }}</div>
+          <div class="rs-person-handle">@{{ p.username }}</div>
         </div>
-        <button class="btn btn-sm rounded-pill fw-semibold"
-          [class.btn-dark]="!p.following"
-          [class.btn-outline-secondary]="p.following"
-          style="font-size:0.78rem;padding:3px 12px;white-space:nowrap;"
-          (click)="p.following = !p.following">
-          {{ p.following ? 'Following' : 'Follow' }}
+        <button class="rs-follow-btn"
+          [disabled]="p.followLoading"
+          (click)="followUser(p)">
+          <span *ngIf="p.followLoading" class="spinner-border" style="width:10px;height:10px;border-width:1.5px;"></span>
+          <span *ngIf="!p.followLoading">Follow</span>
         </button>
       </div>
-      <div *ngIf="filteredPeople.length === 0" class="text-muted small text-center py-2">No results</div>
-    </div>
+      <div *ngIf="filteredPeople.length === 0" class="text-muted small text-center py-2">
+        {{ peopleSearch ? 'No results' : 'No suggestions right now' }}
+      </div>
+    </ng-container>
   </div>
 
   <!-- Trending -->
-  <div class="card border-0 rounded-4" style="background:#f7f9fc;">
-    <div class="card-body p-3">
-      <div class="d-flex align-items-center justify-content-between mb-3">
-        <span class="fw-bold small">📈 Trending</span>
-        <span class="text-muted small">···</span>
-      </div>
-      <div class="trending-item py-2 border-bottom"
-        *ngFor="let item of trendingItems; let i = index">
-        <span class="text-muted small me-2">{{ i + 1 }}.</span>
-        <span class="text-dark fw-medium small">{{ item }}</span>
-      </div>
+  <div class="rs-card">
+    <div class="rs-card-title">📈 Trending</div>
+    <div class="rs-trend" *ngFor="let item of trendingItems; let i = index">
+      <span class="rs-trend-rank">{{ i + 1 }}</span>
+      <span class="rs-trend-text">{{ item }}</span>
     </div>
   </div>
 
-  <div class="mt-3" style="font-size:0.75rem;">
-    <a href="#" class="text-muted me-2">Feedback</a>
-    <a href="#" class="text-muted me-2">Privacy</a>
-    <a href="#" class="text-muted me-2">Terms</a>
-    <a href="#" class="text-muted">Help</a>
+  <div class="rs-footer mt-3">
+    <a href="#" class="rs-footer-link">Feedback</a>
+    <a href="#" class="rs-footer-link">Privacy</a>
+    <a href="#" class="rs-footer-link">Terms</a>
+    <a href="#" class="rs-footer-link">Help</a>
   </div>
 </aside>

@@ -1,0 +1,144 @@
+<div class="page-layout">
+  <app-sidebar></app-sidebar>
+
+  <main class="page-main">
+
+    <!-- Header -->
+    <div class="detail-header sticky-top bg-white border-bottom d-flex align-items-center gap-3 px-4 py-3">
+      <button class="back-btn" (click)="goBack()">←</button>
+      <h5 class="mb-0 fw-bold">Post</h5>
+    </div>
+
+    <!-- Loading -->
+    <div class="text-center py-5" *ngIf="loading">
+      <div class="spinner-border text-primary"></div>
+    </div>
+
+    <!-- Not found -->
+    <div class="text-center py-5 text-muted" *ngIf="!loading && !tweet">
+      <div style="font-size:2rem;">😕</div>
+      <p>Tweet not found</p>
+      <button class="btn btn-primary rounded-pill px-4" (click)="goBack()">Go Home</button>
+    </div>
+
+    <!-- Main Tweet -->
+    <div *ngIf="!loading && tweet">
+      <div class="tweet-full px-4 pt-4 pb-3 border-bottom">
+
+        <!-- Author row -->
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <img [src]="tweet.author.avatar || 'https://i.pravatar.cc/52?u=' + tweet.author.handle"
+            class="rounded-circle" width="52" height="52" style="object-fit:cover;">
+          <div class="flex-grow-1">
+            <div class="d-flex align-items-center gap-1">
+              <span class="fw-bold" style="font-size:1rem;" [routerLink]="['/user', tweet.author.handle]"
+                style="cursor:pointer;">{{ tweet.author.displayName }}</span>
+              <span *ngIf="tweet.author.verified" class="verified-badge">✓</span>
+            </div>
+            <div class="text-muted small">@{{ tweet.author.handle }}</div>
+          </div>
+        </div>
+
+        <!-- Tweet text -->
+        <p class="tweet-text">{{ tweet.text }}</p>
+
+        <!-- Tweet media -->
+        <div *ngIf="tweet.mediaUrls && tweet.mediaUrls.length > 0" class="mb-3">
+          <img *ngFor="let url of tweet.mediaUrls" [src]="url"
+            class="rounded-3 w-100 mb-1" style="max-height:400px;object-fit:cover;">
+        </div>
+
+        <!-- Timestamp -->
+        <div class="tweet-meta border-bottom pb-3 mb-3">
+          <span class="text-muted small">{{ tweet.createdAt }}</span>
+        </div>
+
+        <!-- Stats row -->
+        <div class="stats-row border-bottom pb-3 mb-3 d-flex gap-4">
+          <span class="stat-item"><strong>{{ formatCount(tweet.reposts) }}</strong> <span class="text-muted">Reposts</span></span>
+          <span class="stat-item"><strong>{{ formatCount(tweet.likes) }}</strong> <span class="text-muted">Likes</span></span>
+          <span class="stat-item"><strong>{{ formatCount(tweet.replies) }}</strong> <span class="text-muted">Replies</span></span>
+        </div>
+
+        <!-- Action buttons row -->
+        <div class="actions-row d-flex justify-content-around">
+          <button class="action-icon" title="Reply" (click)="replyText = replyText || ' '; replyText = ''">
+            <span class="icon">💬</span>
+          </button>
+          <button class="action-icon" [class.reposted]="tweet.reposted" (click)="toggleRepost()" title="Repost">
+            <span class="icon">🔁</span>
+          </button>
+          <button class="action-icon" [class.liked]="tweet.liked" (click)="toggleLike()" title="Like">
+            <span class="icon">{{ tweet.liked ? '❤️' : '🤍' }}</span>
+          </button>
+          <button class="action-icon" title="Share">
+            <span class="icon">📤</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Reply composer -->
+      <div class="reply-composer px-4 py-3 border-bottom">
+        <div class="d-flex gap-3 align-items-start">
+          <img [src]="'https://i.pravatar.cc/36?u=user' + currentUserId"
+            class="rounded-circle flex-shrink-0" width="36" height="36">
+          <div class="flex-grow-1">
+            <textarea class="reply-input" [(ngModel)]="replyText"
+              placeholder="Post your reply..."
+              rows="3" maxlength="280"></textarea>
+            <div class="d-flex justify-content-between align-items-center mt-2">
+              <span class="text-muted small">{{ 280 - replyText.length }}</span>
+              <button class="btn-reply-submit" (click)="submitReply()"
+                [disabled]="!replyText.trim() || replyLoading">
+                <span *ngIf="replyLoading" class="spinner-border spinner-border-sm me-1"></span>
+                Reply
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Replies -->
+      <div class="replies-section">
+        <div class="reply-item px-4 py-3 border-bottom" *ngFor="let reply of replies">
+          <div class="d-flex gap-3">
+            <div class="thread-col">
+              <img [src]="reply.author.avatar || 'https://i.pravatar.cc/40?u=' + reply.author.handle"
+                class="rounded-circle" width="40" height="40" style="object-fit:cover;">
+              <div class="thread-line"></div>
+            </div>
+
+            <div class="flex-grow-1">
+              <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                <span class="fw-bold small">{{ reply.author.displayName }}</span>
+                <span class="text-muted small">@{{ reply.author.handle }}</span>
+                <span class="text-muted small">· {{ reply.createdAt }}</span>
+              </div>
+
+              <div class="replying-to text-muted small mb-1">
+                Replying to <span class="text-primary">@{{ tweet.author.handle }}</span>
+              </div>
+
+              <p class="mb-2" style="font-size:0.92rem;line-height:1.5;">{{ reply.text }}</p>
+
+              <div class="d-flex gap-4">
+                <button class="comment-action">💬</button>
+                <button class="comment-action" [class.liked]="reply.liked" (click)="toggleReplyLike(reply)">
+                  {{ reply.liked ? '❤️' : '🤍' }} {{ reply.likes > 0 ? formatCount(reply.likes) : '' }}
+                </button>
+                <button class="comment-action">🔁</button>
+                <button class="comment-action ms-auto">📤</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-center py-4 text-muted" *ngIf="replies.length === 0">
+          <p>No replies yet. Be the first to reply!</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+  <app-right-sidebar></app-right-sidebar>
+</div>

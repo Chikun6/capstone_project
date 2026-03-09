@@ -2,29 +2,44 @@
 .feed-tabs { display: flex; gap: 1.5rem; }
 
 .tab-btn {
-  background: none; border: none; padding: 8px 0;
+  background: none; border: none; padding: 10px 0;
   font-size: 0.9rem; font-weight: 500; color: #666;
-  border-bottom: 2px solid transparent; cursor: pointer; transition: all 0.2s;
+  border-bottom: 3px solid transparent; cursor: pointer; transition: all 0.2s;
 }
 .tab-btn.active { color: #1a1a2e; font-weight: 700; border-bottom-color: #1a85ff; }
 
+/* Post items */
+.post-item { transition: background 0.15s; }
 .post-item:hover { background: #fafbff; }
 
+/* Action buttons */
+.post-actions { display: flex; gap: 6px; margin-top: 8px; }
 .action-btn {
-  background: none; border: none; cursor: pointer;
-  font-size: 0.82rem; padding: 4px 6px; border-radius: 20px;
-  transition: all 0.15s; display: inline-flex; align-items: center; gap: 4px; color: #666;
+  display: inline-flex; align-items: center; gap: 5px;
+  background: none; border: 1.5px solid #e8eaf0;
+  border-radius: 20px; padding: 5px 12px;
+  font-size: 0.82rem; font-weight: 500; color: #555;
+  cursor: pointer; transition: all 0.18s;
+  min-width: 56px; justify-content: center;
 }
-.action-btn:hover { background: #f0f4ff; color: #1a85ff; }
-.action-btn.liked { color: #e0245e; }
-.action-btn.active-repost { color: #17bf63; }
+.action-btn:hover { background: #f0f4ff; border-color: #1a85ff; color: #1a85ff; }
+.action-btn.liked { color: #e0245e; border-color: #f5c0cc; background: #fff5f7; }
+.action-btn.liked:hover { background: #ffe0e8; }
+.action-btn.active-repost { color: #17bf63; border-color: #b2f0d0; background: #f0fff7; }
+.action-btn.active-repost:hover { background: #d0ffe8; }
 
+/* Modal */
 .modal-overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+  position: fixed; inset: 0; background: rgba(0,0,0,0.45);
   z-index: 1000; display: flex; align-items: center; justify-content: center;
   animation: fadeIn 0.2s ease;
 }
-.new-post-modal { width: 100%; max-width: 540px; animation: slideUp 0.2s ease; }
+.new-post-modal {
+  width: 100%; max-width: 540px;
+  background: #fff; border-radius: 18px;
+  padding: 20px; animation: slideUp 0.2s ease;
+  box-shadow: 0 12px 48px rgba(0,0,0,0.16);
+}
 
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }

@@ -1,57 +1,70 @@
 <div class="page-layout">
   <app-sidebar (newPostClicked)="openNewPost()"></app-sidebar>
 
-  <!-- MAIN FEED -->
   <main class="page-main">
     <div class="feed-header d-flex align-items-center justify-content-center gap-1 py-2 border-bottom sticky-top bg-white">
-      <span style="font-size:1.4rem;">🦋</span>
+      <span style="font-size:1.4rem;">🐦</span>
       <div class="feed-tabs d-flex gap-4 ms-3">
-        <button class="tab-btn" [class.active]="activeTab === 'discover'" (click)="setTab('discover')">Discover</button>
-        <button class="tab-btn" [class.active]="activeTab === 'following'" (click)="setTab('following')">Following</button>
-        <button class="tab-btn" [class.active]="activeTab === 'video'" (click)="setTab('video')">Video</button>
+        <button class="tab-btn" [class.active]="activeTab==='for_you'" (click)="setTab('for_you')">For You</button>
+        <button class="tab-btn" [class.active]="activeTab==='following'" (click)="setTab('following')">Following</button>
       </div>
     </div>
 
-    <div class="post-composer d-flex align-items-start gap-3 p-3 border-bottom">
-      <div class="avatar-sm bg-primary d-flex align-items-center justify-content-center flex-shrink-0 rounded-circle" style="width:40px;height:40px;">
-        <span class="text-white fw-bold small">@</span>
-      </div>
-      <button class="form-control text-start text-muted border-0 bg-transparent shadow-none ps-0" (click)="openNewPost()">
-        What's up?
-      </button>
+    <!-- Post Composer -->
+    <div class="d-flex align-items-start gap-3 p-3 border-bottom">
+      <img [src]="currentUserAvatarUrl || 'https://i.pravatar.cc/40?u=me'"
+        class="rounded-circle flex-shrink-0" width="40" height="40" style="object-fit:cover;">
+      <button class="form-control text-start text-muted border-0 bg-transparent shadow-none ps-0"
+        (click)="openNewPost()">What's happening?</button>
       <button class="btn btn-sm btn-outline-secondary rounded" (click)="openNewPost()">🖼️</button>
     </div>
 
+    <!-- Posts Feed -->
     <div class="posts-feed">
       <div class="post-item border-bottom p-3" *ngFor="let post of posts">
         <div class="d-flex gap-3">
-          <img [src]="post.author.avatar || 'https://i.pravatar.cc/40?u=' + post.author.handle"
-            class="rounded-circle flex-shrink-0" width="44" height="44" [alt]="post.author.displayName">
+          <img [src]="post.author.avatar || ('https://i.pravatar.cc/40?u=' + post.author.handle)"
+            class="rounded-circle flex-shrink-0" width="44" height="44"
+            style="cursor:pointer;object-fit:cover;"
+            (click)="goToUserProfile(post)">
           <div class="flex-grow-1 min-w-0">
-            <div class="d-flex align-items-center gap-1 flex-wrap mb-1">
-              <span class="fw-bold text-dark small">{{ post.author.displayName }}</span>
-              <span *ngIf="post.author.verified" class="text-primary small">✓</span>
-              <span class="text-muted small">@{{ post.author.handle }}</span>
-              <span class="text-muted small">· {{ post.createdAt }}</span>
+            <div class="d-flex align-items-center gap-1 flex-wrap mb-1 justify-content-between">
+              <div class="d-flex align-items-center gap-1 flex-wrap">
+                <span class="fw-bold text-dark" style="font-size:0.92rem;cursor:pointer;"
+                  (click)="goToUserProfile(post)">{{ post.author.displayName }}</span>
+                <span class="text-muted" style="font-size:0.82rem;">@{{ post.author.handle }}</span>
+                <span class="text-muted" style="font-size:0.82rem;">· {{ post.createdAt }}</span>
+              </div>
+              <button *ngIf="post.author.id?.toString() === currentUser?.id?.toString()"
+                class="btn btn-sm btn-link text-danger p-0" (click)="deletePost(post)" title="Delete">🗑️</button>
             </div>
-            <p class="mb-2" style="font-size:0.95rem;line-height:1.5;">{{ post.text }}</p>
-            <p class="mb-2" *ngIf="post.hashtags?.length">
-              <span class="text-primary fw-medium small me-1" *ngFor="let tag of post.hashtags">{{ tag }}</span>
-            </p>
-            <img *ngIf="post.image" [src]="post.image" class="rounded-3 mb-2 w-100" style="max-height:400px;object-fit:cover;" [alt]="post.text">
-            <div class="d-flex gap-4 mt-2">
-              <button class="action-btn" (click)="toggleRepost(post)" [class.active-repost]="post.reposted">
-                🔁 {{ formatCount(post.reposts) }}
+
+            <p class="mb-2" style="font-size:0.95rem;line-height:1.5;cursor:pointer;"
+              (click)="goToTweet(post)">{{ post.text }}</p>
+
+            <div *ngIf="post.mediaUrls && post.mediaUrls.length > 0" class="mb-2">
+              <img *ngFor="let url of post.mediaUrls" [src]="url"
+                class="rounded-3 mb-1 w-100" style="max-height:400px;object-fit:cover;">
+            </div>
+
+            <div class="post-actions">
+              <button class="action-btn" [class.active-repost]="post.reposted" (click)="toggleRepost(post)">
+                <span>🔁</span><span>{{ formatCount(post.reposts) }}</span>
               </button>
-              <button class="action-btn">💬 {{ formatCount(post.replies) }}</button>
-              <button class="action-btn" (click)="toggleLike(post)" [class.liked]="post.liked">
-                {{ post.liked ? '❤️' : '🤍' }} {{ formatCount(post.likes) }}
+              <button class="action-btn" (click)="goToTweet(post)">
+                <span>💬</span><span>{{ formatCount(post.replies) }}</span>
               </button>
-              <button class="action-btn ms-auto">🔖</button>
-              <button class="action-btn">📤</button>
+              <button class="action-btn" [class.liked]="post.liked" (click)="toggleLike(post)">
+                <span>{{ post.liked ? '❤️' : '🤍' }}</span><span>{{ formatCount(post.likes) }}</span>
+              </button>
             </div>
           </div>
         </div>
+      </div>
+
+      <div class="text-center py-5 text-muted" *ngIf="posts.length === 0">
+        <div style="font-size:2rem;">🐦</div>
+        <p class="mt-2">No tweets yet. Be the first to post!</p>
       </div>
     </div>
   </main>
@@ -61,29 +74,44 @@
 
 <!-- New Post Modal -->
 <div class="modal-overlay" *ngIf="showNewPostModal" (click)="closeNewPost()">
-  <div class="new-post-modal card shadow-lg border-0 rounded-4 p-4" (click)="$event.stopPropagation()">
+  <div class="new-post-modal" (click)="$event.stopPropagation()">
     <div class="d-flex justify-content-between align-items-center mb-3">
-      <button class="btn btn-link text-decoration-none text-primary p-0 fw-medium" (click)="closeNewPost()">Cancel</button>
-      <div class="d-flex gap-3">
-        <button class="btn btn-sm btn-link text-decoration-none text-muted p-0">Drafts</button>
-        <button class="btn btn-primary rounded-pill px-4 fw-semibold" (click)="submitPost()" [disabled]="!newPostText.trim() || postLoading">Post</button>
-      </div>
+      <button class="btn btn-sm btn-light rounded-circle" (click)="closeNewPost()" style="width:32px;height:32px;padding:0;">✕</button>
+      <button class="btn btn-primary rounded-pill px-4 fw-semibold"
+        (click)="submitPost()"
+        [disabled]="!newPostText.trim() || newPostText.length > maxChars || postLoading">
+        <span *ngIf="postLoading" class="spinner-border spinner-border-sm me-1"></span>
+        {{ postLoading ? 'Posting…' : 'Post' }}
+      </button>
     </div>
+
+    <div class="alert alert-danger py-2 small" *ngIf="postError">{{ postError }}</div>
+
     <div class="d-flex gap-3">
-      <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center flex-shrink-0" style="width:40px;height:40px;">
-        <span class="text-white fw-bold small">@</span>
-      </div>
-      <textarea class="form-control border-0 shadow-none flex-grow-1" placeholder="What's up?" style="resize:none;"
-        rows="5" [value]="newPostText" (input)="newPostText = $any($event.target).value" maxlength="300"></textarea>
+      <img [src]="currentUserAvatarUrl || 'https://i.pravatar.cc/40?u=me'"
+        class="rounded-circle flex-shrink-0" width="40" height="40" style="object-fit:cover;">
+      <textarea class="form-control border-0 shadow-none flex-grow-1"
+        placeholder="What's happening?"
+        style="resize:none;" rows="4"
+        [(ngModel)]="newPostText"
+        (ngModelChange)="onTextChange()"></textarea>
     </div>
-    <hr>
+
+    <div *ngIf="selectedMediaPreview" class="mt-2 position-relative">
+      <img [src]="selectedMediaPreview" class="rounded-3 w-100" style="max-height:250px;object-fit:cover;">
+      <button class="btn btn-sm btn-dark position-absolute top-0 end-0 m-1 rounded-circle"
+        style="width:28px;height:28px;padding:0;" (click)="removeMedia()">✕</button>
+    </div>
+
+    <hr class="my-2">
     <div class="d-flex align-items-center justify-content-between">
-      <div class="d-flex gap-3">
-        <button class="btn btn-sm btn-link text-muted">🖼️</button>
-        <button class="btn btn-sm btn-link text-muted">GIF</button>
-        <button class="btn btn-sm btn-link text-muted">😊</button>
+      <div class="d-flex gap-2">
+        <label class="btn btn-sm btn-light rounded-circle mb-0" style="cursor:pointer;width:34px;height:34px;padding:0;display:flex;align-items:center;justify-content:center;">
+          🖼️
+          <input type="file" accept="image/*,video/*" style="display:none" (change)="onMediaPicked($event)">
+        </label>
       </div>
-      <span class="text-muted small">{{ 300 - newPostText.length }}</span>
+      <span class="small" [class]="charCountColor">{{ maxChars - newPostText.length }}</span>
     </div>
   </div>
 </div>

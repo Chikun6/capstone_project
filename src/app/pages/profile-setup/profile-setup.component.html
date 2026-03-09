@@ -1,0 +1,194 @@
+<div class="setup-wrapper">
+
+  <!-- Left brand panel -->
+  <div class="setup-brand">
+    <div class="brand-content">
+      <div class="brand-logo">🐦</div>
+      <h1 class="brand-title">Set up your<br><span>Profile</span></h1>
+      <p class="brand-sub">All fields are optional — you can always complete them later.</p>
+
+      <div class="step-indicators">
+        <div class="step-dot" [class.active]="currentStep===1" [class.done]="currentStep>1">
+          <span *ngIf="currentStep>1">✓</span>
+          <span *ngIf="currentStep<=1">1</span>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step-dot" [class.active]="currentStep===2">
+          <span>2</span>
+        </div>
+      </div>
+
+      <div class="step-labels">
+        <span [class.active-label]="currentStep===1">Edit Info</span>
+        <span [class.active-label]="currentStep===2">Preview</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right form panel -->
+  <div class="setup-form-panel">
+    <div class="progress-bar-wrap">
+      <div class="progress-fill" [style.width.%]="progress"></div>
+    </div>
+
+    <div class="form-area">
+
+      <!-- STEP 1: Edit -->
+      <div class="step-content" *ngIf="currentStep === 1">
+        <div class="step-header">
+          <h2>Hello, {{ authService.currentUser?.first_name || 'there' }} 👋</h2>
+          <p>Fill in what you'd like — skip anything you want to add later.</p>
+        </div>
+
+        <!-- Cover photo -->
+        <div class="field-group">
+          <div class="field-label-row">
+            <label>Cover Photo</label>
+            <button class="skip-btn" (click)="form.coverUrl = ''; form.coverFile = null" type="button">Clear</button>
+          </div>
+          <div class="cover-preview"
+            [style.background-image]="form.coverUrl ? 'url(' + form.coverUrl + ')' : ''"
+            [class.has-image]="form.coverUrl"
+            (click)="coverInput.click()">
+            <div class="cover-placeholder" *ngIf="!form.coverUrl">
+              <span class="upload-icon">📷</span>
+              <span>Click to upload cover photo</span>
+              <span class="upload-hint">JPG, PNG, GIF · Max 5MB</span>
+            </div>
+            <div class="cover-change-overlay" *ngIf="form.coverUrl">
+              <span>📷 Change Photo</span>
+            </div>
+          </div>
+          <input #coverInput type="file" accept="image/*" style="display:none"
+            (change)="onCoverPicked($event)">
+        </div>
+
+        <!-- Profile photo -->
+        <div class="field-group">
+          <div class="field-label-row">
+            <label>Profile Photo</label>
+            <button class="skip-btn" (click)="form.avatarUrl = ''; form.avatarFile = null" type="button">Clear</button>
+          </div>
+          <div class="avatar-row">
+            <div class="avatar-preview" (click)="avatarInput.click()" style="cursor:pointer;">
+              <img *ngIf="form.avatarUrl" [src]="form.avatarUrl">
+              <span *ngIf="!form.avatarUrl">{{ authService.currentUser?.first_name?.[0] || '?' }}</span>
+              <div class="avatar-overlay">📷</div>
+            </div>
+            <div class="avatar-upload-info" (click)="avatarInput.click()">
+              <span class="upload-label">{{ form.avatarUrl ? 'Change photo' : 'Upload a profile photo' }}</span>
+              <span class="upload-hint">JPG, PNG, GIF · Max 5MB</span>
+            </div>
+            <input #avatarInput type="file" accept="image/*" style="display:none"
+              (change)="onAvatarPicked($event)">
+          </div>
+        </div>
+
+        <!-- Bio -->
+        <div class="field-group">
+          <div class="field-label-row">
+            <label>Bio <span class="optional-tag">optional</span></label>
+            <button class="skip-btn" (click)="form.bio = ''" type="button">Clear</button>
+          </div>
+          <textarea [(ngModel)]="form.bio"
+            placeholder="Tell people about yourself..."
+            rows="3" maxlength="256"></textarea>
+          <span class="char-count">{{ form.bio.length }}/256</span>
+        </div>
+
+        <!-- Location -->
+        <div class="field-group">
+          <div class="field-label-row">
+            <label>Location <span class="optional-tag">optional</span></label>
+            <button class="skip-btn" (click)="form.location = ''" type="button">Clear</button>
+          </div>
+          <div class="input-icon-wrap">
+            <span class="icon">📍</span>
+            <input type="text" [(ngModel)]="form.location" placeholder="e.g. Kolkata, India">
+          </div>
+        </div>
+
+        <!-- Website -->
+        <div class="field-group">
+          <div class="field-label-row">
+            <label>Website <span class="optional-tag">optional</span></label>
+            <button class="skip-btn" (click)="form.website = ''" type="button">Clear</button>
+          </div>
+          <div class="input-icon-wrap">
+            <span class="icon">🔗</span>
+            <input type="url" [(ngModel)]="form.website" placeholder="https://yoursite.com">
+          </div>
+        </div>
+
+        <div class="step-actions">
+          <button class="btn-skip-all" (click)="skip()" type="button">
+            Skip all →
+          </button>
+          <button class="btn-next" (click)="goToPreview()" type="button">
+            Preview Profile →
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 2: Preview -->
+      <div class="step-content" *ngIf="currentStep === 2">
+        <div class="step-header">
+          <h2>Looking good! 🎉</h2>
+          <p>Here's how your profile will appear to others. You can still edit later.</p>
+        </div>
+
+        <div class="alert alert-danger" *ngIf="error">{{ error }}</div>
+
+        <!-- Profile preview card -->
+        <div class="profile-card">
+          <!-- Cover -->
+          <div class="card-cover"
+            [style.background-image]="form.coverUrl ? 'url(' + form.coverUrl + ')' : ''"
+            [class.default-cover]="!form.coverUrl">
+          </div>
+
+          <!-- Avatar -->
+          <div class="card-avatar-wrap">
+            <div class="card-avatar">
+              <img *ngIf="form.avatarUrl" [src]="form.avatarUrl">
+              <span *ngIf="!form.avatarUrl">{{ authService.currentUser?.first_name?.[0] || '?' }}</span>
+            </div>
+          </div>
+
+          <!-- Info -->
+          <div class="card-info">
+            <h4 class="card-name">{{ authService.currentUser?.first_name }} {{ authService.currentUser?.last_name }}</h4>
+            <div class="card-handle">@{{ authService.currentUser?.username }}</div>
+
+            <p class="card-bio" *ngIf="form.bio">{{ form.bio }}</p>
+            <p class="card-empty-field" *ngIf="!form.bio">
+              <span class="empty-icon">✏️</span> No bio yet
+            </p>
+
+            <div class="card-meta">
+              <span *ngIf="form.location">📍 {{ form.location }}</span>
+              <span *ngIf="!form.location" class="card-empty-field">📍 No location</span>
+              <span *ngIf="form.website">🔗 {{ form.website }}</span>
+              <span *ngIf="!form.website" class="card-empty-field">🔗 No website</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Skipped fields notice -->
+        <div class="skipped-notice" *ngIf="!form.bio || !form.location || !form.website || !form.avatarUrl || !form.coverUrl">
+          <span>💡</span>
+          <span>Some fields are empty — you can complete them anytime from your profile settings.</span>
+        </div>
+
+        <div class="step-actions">
+          <button class="btn-back" (click)="goBack()" type="button">← Edit</button>
+          <button class="btn-finish" (click)="finish()" type="button" [disabled]="saving">
+            <span *ngIf="saving" class="spinner-border spinner-border-sm me-2"></span>
+            🐦 Save & Go to Feed
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

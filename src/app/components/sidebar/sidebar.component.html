@@ -1,16 +1,19 @@
 <aside class="sidebar-left">
   <!-- User Profile on Top -->
   <div class="user-profile-top mb-4 d-flex align-items-center justify-content-between px-2">
-    <div class="d-flex align-items-center gap-2">
-      <div class="avatar-circle-sm bg-primary d-flex align-items-center justify-content-center flex-shrink-0">
-        <span class="text-white fw-bold">@</span>
+    <div class="d-flex align-items-center gap-2" style="cursor:pointer;" routerLink="/profile">
+      <div class="avatar-circle-sm d-flex align-items-center justify-content-center flex-shrink-0 overflow-hidden">
+        <img *ngIf="avatarUrl" [src]="avatarUrl" class="w-100 h-100" style="object-fit:cover;border-radius:50%;">
+        <span *ngIf="!avatarUrl" class="text-white fw-bold">{{ currentUser?.first_name?.[0] || '@' }}</span>
       </div>
       <div>
-        <div class="fw-bold small text-dark" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px;">sourav06.bsky.social</div>
-        <div class="text-muted" style="font-size:0.75rem;">@sourav06.bsky.so...</div>
+        <div class="fw-bold small text-dark" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px;">
+          {{ currentUser?.first_name }} {{ currentUser?.last_name }}
+        </div>
+        <div class="text-muted" style="font-size:0.75rem;">@{{ currentUser?.username }}</div>
       </div>
     </div>
-    <button class="btn btn-link p-0 text-muted">···</button>
+    <button class="btn btn-link p-0 text-muted" (click)="logout()" title="Logout">🚪</button>
   </div>
 
   <!-- Nav Links -->
@@ -24,13 +27,8 @@
     <a class="nav-item" routerLink="/notifications" routerLinkActive="active">
       <span class="nav-icon">🔔</span><span class="nav-label">Notifications</span>
     </a>
-    
-    <!-- <a class="nav-item">
-      <span class="nav-icon">#</span><span class="nav-label">Feeds</span>
-    </a> -->
-  
     <a class="nav-item" routerLink="/follow" routerLinkActive="active">
-      <span class="nav-icon">👥</span><span class="nav-label"> Peoples</span>
+      <span class="nav-icon">👥</span><span class="nav-label">Connections</span>
     </a>
     <a class="nav-item" routerLink="/profile" routerLinkActive="active">
       <span class="nav-icon">👤</span><span class="nav-label">Profile</span>

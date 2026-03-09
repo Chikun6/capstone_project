@@ -9,114 +9,145 @@
   <div class="right-panel d-flex flex-column justify-content-center align-items-center px-4 px-md-5 flex-grow-1">
     <div class="form-card w-100" style="max-width: 540px;">
 
-      <!-- Step 1: Account Info -->
-      <div>
-        <h3 class="fw-bold text-dark m-4">Create account</h3>
+      <h3 class="fw-bold text-dark m-4">Create account</h3>
+      <p class="text-muted-light small mb-3 px-4">
+        You are creating an account on <strong class="text-primary">Twitter</strong>
+      </p>
 
-        <p class="text-muted-light small mb-3">
-          You are creating an account on <strong class="text-primary">Twitter</strong>
+      <!-- Global error -->
+      <div class="alert alert-danger mx-4" *ngIf="error">{{ error }}</div>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <!-- First Name -->
+        <div class="mb-2 px-4">
+          <label class="form-label-custom">First Name</label>
+          <div class="input-group-custom d-flex align-items-center px-3 rounded-3"
+            [class.border-danger]="f['firstName'].invalid && f['firstName'].touched">
+            <span class="text-muted me-2">👤</span>
+            <input type="text" class="custom-input flex-grow-1 py-2" placeholder="Enter your first name"
+              formControlName="firstName" />
+          </div>
+          <small class="text-danger" *ngIf="f['firstName'].touched && f['firstName'].errors?.['required']">
+            First name is required.
+          </small>
+          <small class="text-danger" *ngIf="f['firstName'].touched && f['firstName'].errors?.['notCapitalized']">
+            First letter of each word must be capitalized (e.g. "John").
+          </small>
+        </div>
+
+        <!-- Last Name -->
+        <div class="mb-2 px-4">
+          <label class="form-label-custom">Last Name</label>
+          <div class="input-group-custom d-flex align-items-center px-3 rounded-3"
+            [class.border-danger]="f['lastName'].invalid && f['lastName'].touched">
+            <span class="text-muted me-2">👤</span>
+            <input type="text" class="custom-input flex-grow-1 py-2" placeholder="Enter your last name"
+              formControlName="lastName" />
+          </div>
+          <small class="text-danger" *ngIf="f['lastName'].touched && f['lastName'].errors?.['required']">
+            Last name is required.
+          </small>
+          <small class="text-danger" *ngIf="f['lastName'].touched && f['lastName'].errors?.['notCapitalized']">
+            First letter must be capitalized.
+          </small>
+        </div>
+
+        <!-- Username -->
+        <div class="mb-2 px-4">
+          <label class="form-label-custom">Username</label>
+          <div class="input-group-custom d-flex align-items-center px-3 rounded-3"
+            [class.border-danger]="f['username'].invalid && f['username'].touched">
+            <span class="text-muted me-2">@</span>
+            <input type="text" class="custom-input flex-grow-1 py-2" placeholder="Choose a username"
+              formControlName="username" />
+          </div>
+          <small class="text-danger" *ngIf="f['username'].touched && f['username'].errors?.['required']">
+            Username is required.
+          </small>
+          <small class="text-danger" *ngIf="f['username'].touched && f['username'].errors?.['minlength']">
+            Username must be at least 3 characters.
+          </small>
+          <small class="text-danger" *ngIf="f['username'].touched && f['username'].errors?.['pattern']">
+            Only letters, numbers and underscores allowed.
+          </small>
+        </div>
+
+        <!-- Email -->
+        <div class="mb-2 px-4">
+          <label class="form-label-custom">Email</label>
+          <div class="input-group-custom d-flex align-items-center px-3 rounded-3"
+            [class.border-danger]="f['email'].invalid && f['email'].touched">
+            <span class="text-muted me-2">✉️</span>
+            <input type="email" class="custom-input flex-grow-1 py-2" placeholder="Enter your email address"
+              formControlName="email" />
+          </div>
+          <small class="text-danger" *ngIf="f['email'].touched && f['email'].errors?.['required']">
+            Email is required.
+          </small>
+          <small class="text-danger" *ngIf="f['email'].touched && (f['email'].errors?.['email'] || f['email'].errors?.['pattern'])">
+            Enter a valid email (e.g. user@example.com).
+          </small>
+        </div>
+
+        <!-- Password -->
+        <div class="mb-2 px-4">
+          <label class="form-label-custom">Password</label>
+          <div class="input-group-custom d-flex align-items-center px-3 rounded-3"
+            [class.border-danger]="f['password'].invalid && f['password'].touched">
+            <span class="text-muted me-2">🔒</span>
+            <input [type]="showPassword ? 'text' : 'password'" class="custom-input flex-grow-1 py-2"
+              placeholder="Min 8 chars, upper, lower, digit, special"
+              formControlName="password" />
+            <span class="text-muted ms-2" style="cursor:pointer" (click)="showPassword=!showPassword">
+              {{ showPassword ? '🙈' : '👁️' }}
+            </span>
+          </div>
+          <small class="text-danger" *ngIf="f['password'].touched && f['password'].errors?.['required']">Password is required.</small>
+          <small class="text-danger" *ngIf="f['password'].touched && f['password'].errors?.['minlength']">Minimum 8 characters.</small>
+          <small class="text-danger" *ngIf="f['password'].touched && f['password'].errors?.['maxlength']">Maximum 16 characters.</small>
+          <small class="text-danger" *ngIf="f['password'].touched && f['password'].errors?.['weakPassword']">
+            Must have uppercase, lowercase, digit and special character.
+          </small>
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="mb-3 px-4">
+          <label class="form-label-custom">Confirm Password</label>
+          <div class="input-group-custom d-flex align-items-center px-3 rounded-3"
+            [class.border-danger]="f['confirmPassword'].touched && form.hasError('passwordMismatch')">
+            <span class="text-muted me-2">🔒</span>
+            <input [type]="showConfirm ? 'text' : 'password'" class="custom-input flex-grow-1 py-2"
+              placeholder="Re-enter your password"
+              formControlName="confirmPassword" />
+            <span class="text-muted ms-2" style="cursor:pointer" (click)="showConfirm=!showConfirm">
+              {{ showConfirm ? '🙈' : '👁️' }}
+            </span>
+          </div>
+          <small class="text-danger"
+            *ngIf="f['confirmPassword'].touched && form.hasError('passwordMismatch')">
+            Passwords do not match.
+          </small>
+        </div>
+
+        <p class="text-muted-light small mb-2 px-4">
+          By creating an account you agree to the
+          <a href="#" class="text-primary text-decoration-none">Terms of Service</a> and
+          <a href="#" class="text-primary text-decoration-none">Privacy Policy</a>.
         </p>
 
-        <form [formGroup]="form">
-          <!-- Email -->
-          <div class="mb-2">
-            <label class="form-label-custom">First Name</label>
-            <div class="input-group-custom d-flex align-items-center px-3 rounded-3">
-              <span class="text-muted me-2">👤</span>
-              <input type="text" class="custom-input flex-grow-1 py-2" placeholder="Enter your first name"
-                formControlName="firstName" />
-            </div>
-            <small class="text-danger" *ngIf="form.get('firstName')?.invalid && form.get('firstName')?.touched">
-              First name is required
-            </small>
-          </div>
+        <div class="d-flex justify-content-between px-4 mb-3">
+          <button type="button" class="btn btn-outline-custom rounded-pill px-4" (click)="goBack()">Back</button>
+          <button type="submit" class="btn btn-primary rounded-pill px-5 fw-semibold" [disabled]="loading">
+            <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+            {{ loading ? 'Creating...' : 'Create Account' }}
+          </button>
+        </div>
+      </form>
 
-          <!-- Last Name -->
-          <div class="mb-2">
-            <label class="form-label-custom">Last Name</label>
-            <div class="input-group-custom d-flex align-items-center px-3 rounded-3">
-              <span class="text-muted me-2">👤</span>
-              <input type="text" class="custom-input flex-grow-1 py-2" placeholder="Enter your last name"
-                formControlName="lastName" />
-            </div>
-            <small class="text-danger" *ngIf="form.get('lastName')?.invalid && form.get('lastName')?.touched">
-              Last name is required
-            </small>
-          </div>
-
-          <!-- Username -->
-          <div class="mb-2">
-            <label class="form-label-custom">Username</label>
-            <div class="input-group-custom d-flex align-items-center px-3 rounded-3">
-              <span class="text-muted me-2">@</span>
-              <input type="text" class="custom-input flex-grow-1 py-2" placeholder="Choose a username"
-                formControlName="username" />
-            </div>
-            <small class="text-danger" *ngIf="form.get('username')?.invalid && form.get('username')?.touched">
-              Username is required
-            </small>
-          </div>
-
-          <!-- Email -->
-          <div class="mb-2">
-            <label class="form-label-custom">Email</label>
-            <div class="input-group-custom d-flex align-items-center px-3 rounded-3">
-              <span class="text-muted me-2">✉️</span>
-              <input type="email" class="custom-input flex-grow-1 py-2" placeholder="Enter your email address"
-                formControlName="email" />
-            </div>
-            <small class="text-danger" *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
-              Valid email required
-            </small>
-          </div>
-
-          <!-- Password -->
-          <div class="mb-2">
-            <label class="form-label-custom">Password</label>
-            <div class="input-group-custom d-flex align-items-center px-3 rounded-3">
-              <span class="text-muted me-2">🔒</span>
-              <input type="password" class="custom-input flex-grow-1 py-2" placeholder="Choose your password"
-                formControlName="password" />
-            </div>
-            <small class="text-danger" *ngIf="form.get('password')?.invalid && form.get('password')?.touched">
-              At least 8 characters required
-            </small>
-          </div>
-
-          <!-- Confirm Password -->
-          <div class="mb-3">
-            <label class="form-label-custom">Confirm Password</label>
-            <div class="input-group-custom d-flex align-items-center px-3 rounded-3"
-              [class.border-danger]="form.get('confirmPassword')?.touched && form.hasError('passwordMismatch')">
-              <span class="text-muted me-2">🔒</span>
-              <input type="password" class="custom-input flex-grow-1 py-2" placeholder="Re-enter your password"
-                formControlName="confirmPassword" />
-            </div>
-            <small class="text-danger"
-              *ngIf="form.get('confirmPassword')?.touched && form.hasError('passwordMismatch')">
-              Passwords do not match
-            </small>
-          </div>
-
-          <p class="text-muted-light small mb-2">
-            By creating an account you agree to the
-            <a href="#" class="text-primary text-decoration-none">Terms of Service</a> and
-            <a href="#" class="text-primary text-decoration-none">Privacy Policy</a>.
-          </p>
-
-          <div class="d-flex justify-content-between">
-            <button type="button" class="btn btn-outline-custom rounded-pill px-4" (click)="goBack()">Back</button>
-            <button type="button" class="btn btn-primary rounded-pill px-5 fw-semibold"
-              (click)="nextStep()">Next</button>
-          </div>
-        </form>
-      </div>
-
-      <!-- Footer -->
-      <div class="text-center mt-2 mb-5 pt-3 border-top-custom">
+      <div class="text-center mt-2 mb-4 pt-3 border-top-custom">
         <small class="text-muted-light">
           Already have an account?
-          <a routerLink="/login" class="text-primary text-decoration-none fw-medium">Sign in</a>
+          <a (click)="goToLogin()" class="text-primary text-decoration-none fw-medium" style="cursor:pointer">Sign in</a>
         </small>
       </div>
     </div>

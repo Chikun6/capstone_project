@@ -21,15 +21,35 @@ export class LoginPageComponent {
     });
   }
 
+  get f() { return this.form.controls; }
+
   onSubmit(): void {
-    if (this.form.invalid) return;
-    this.loading = true;
     this.error = '';
-    const identifier = this.form.get('identifier')?.value as string;
-    const password = this.form.get('password')?.value as string;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+    this.loading = true;
+    const identifier = this.f['identifier'].value.trim();
+    const password = this.f['password'].value;
+
     this.authService.login(identifier, password).subscribe({
-      next: () => { this.loading = false; this.router.navigate(['/home']); },
-      error: () => { this.loading = false; this.error = 'Invalid credentials. Please try again.'; }
+      next: (user) => {
+        this.loading = false;
+        // Redirect to profile setup if first time login
+        if (!user.profile_setup_done) {
+          this.router.navigate(['/setup']);
+        } else {
+          this.router.navigate(['/home']);
+        }
+      },
+      error: (err) => {
+        this.loading = false;
+        const msg = err?.message || '';
+        if (msg === 'USER_NOT_FOUND') this.error = 'No account found with that email or username.';
+        else if (msg === 'INVALID_PASSWORD') this.error = 'Incorrect password. Please try again.';
+        else this.error = 'Login failed. Please check your credentials.';
+      }
     });
   }
 

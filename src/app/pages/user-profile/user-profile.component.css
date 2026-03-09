@@ -4,4 +4,4 @@
   border-bottom: 2px solid transparent; cursor: pointer; transition: all 0.2s;
 }
 .tab-btn.active { color: #1a1a2e; font-weight: 700; border-bottom-color: #1a85ff; }
-.user-item:hover { background: #fafbff; }
+.post-item:hover { background: #fafbff; }

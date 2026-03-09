@@ -12,13 +12,19 @@ import { LandingPageComponent } from './pages/landing/landing.component';
 import { LoginPageComponent } from './pages/login/login.component';
 import { RegisterPageComponent } from './pages/register/register.component';
 import { HomeComponent } from './pages/home/home.component';
-import { FollowPageComponent } from './pages/follow/follow.component';
-import { ProfilePageComponent } from './pages/profile/profile.component';
+import { FollowComponent } from './pages/follow/follow.component';
+import { ProfileComponent } from './pages/profile/profile.component';
 import { ExploreComponent } from './pages/explore/explore.component';
 import { SettingsComponent } from './pages/settings/settings.component';
 import { NotificationsComponent } from './pages/notifications/notifications.component';
+import { UserProfileComponent } from './pages/user-profile/user-profile.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { RightSidebarComponent } from './components/right-sidebar/right-sidebar.component';
+import { ProfileSetupComponent } from './pages/profile-setup/profile-setup.component';
+import { TweetComponent } from './pages/tweet/tweet.component';
+
+// Services are provided in root so no need to list here,
+// but this ensures everything is wired up.
 
 @NgModule({
   declarations: [
@@ -27,13 +33,16 @@ import { RightSidebarComponent } from './components/right-sidebar/right-sidebar.
     LoginPageComponent,
     RegisterPageComponent,
     HomeComponent,
-    FollowPageComponent,
-    ProfilePageComponent,
+    FollowComponent,
+    ProfileComponent,
     ExploreComponent,
     SettingsComponent,
     NotificationsComponent,
+    UserProfileComponent,
     SidebarComponent,
-    RightSidebarComponent
+    RightSidebarComponent,
+    ProfileSetupComponent,
+    TweetComponent
   ],
   imports: [
     BrowserModule,

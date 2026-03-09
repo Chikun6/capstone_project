@@ -1,99 +1,211 @@
-.profile-main { min-height: 100vh; }
+/* Layout */
+.profile-topbar { z-index: 10; }
 
 .back-btn {
-  width: 34px;
-  height: 34px;
-  padding: 0;
-  font-size: 1rem;
+  width: 36px; height: 36px;
+  border-radius: 50%; border: 1.5px solid #ddd;
+  background: #fff; cursor: pointer; font-size: 1rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
 }
+.back-btn:hover { background: #f0f2f5; }
 
+/* Cover Banner */
 .profile-banner {
-  height: 140px;
-  background: #1a85ff;
-  opacity: 0.6;
+  height: 150px;
+  background: linear-gradient(135deg, #1a85ff 0%, #6c63ff 100%);
+  background-size: cover;
+  background-position: center;
 }
 
-.profile-avatar-row {
-  margin-top: -40px;
-}
+/* Avatar row */
+.profile-avatar-row { margin-top: -46px; }
 
 .profile-avatar {
-  width: 82px;
-  height: 82px;
-  border-radius: 50%;
-  border: 4px solid white;
+  width: 88px; height: 88px;
+  border-radius: 50%; border: 4px solid #fff;
+  background: #1a85ff;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
 }
+.avatar-initial { color: #fff; font-weight: 700; font-size: 1.6rem; }
 
-.profile-avatar-sm {
-  width: 40px;
-  height: 40px;
+.edit-profile-btn {
+  background: #fff; border: 1.5px solid #1a1a2e;
+  color: #1a1a2e; border-radius: 20px;
+  padding: 7px 18px; font-size: 0.88rem; font-weight: 600;
+  cursor: pointer; transition: all 0.18s; margin-bottom: 8px;
 }
+.edit-profile-btn:hover { background: #f5f5ff; }
 
-.tab-btn {
-  background: none;
-  border: none;
-  padding: 12px 0;
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: #666;
-  border-bottom: 2px solid transparent;
-  cursor: pointer;
-  transition: all 0.2s;
+/* Follow stats */
+.follow-stat {
+  font-size: 0.88rem; cursor: pointer;
+  display: inline-flex; gap: 4px; align-items: center;
 }
+.follow-stat:hover strong { text-decoration: underline; }
 
-.tab-btn.active {
-  color: #1a1a2e;
-  font-weight: 700;
-  border-bottom-color: #1a85ff;
+/* Tabs */
+.profile-tabs { gap: 0; }
+.ptab {
+  background: none; border: none; padding: 14px 18px;
+  font-size: 0.9rem; font-weight: 500; color: #666;
+  border-bottom: 3px solid transparent; cursor: pointer; transition: all 0.2s;
 }
+.ptab.active { color: #1a1a2e; font-weight: 700; border-bottom-color: #1a85ff; }
+.ptab:hover:not(.active) { color: #1a1a2e; background: #f5f5ff; }
 
-.post-item { transition: background 0.15s; }
-.post-item:hover { background: #fafbff; }
+/* Post card */
+.post-card {
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid #eee;
+  transition: background 0.15s;
+}
+.post-card:hover { background: #fafbff; }
+
+.post-avatar {
+  border-radius: 50%; flex-shrink: 0; object-fit: cover;
+}
 
 .post-text {
-  font-size: 0.95rem;
-  color: #1a1a2e;
-  line-height: 1.5;
+  font-size: 0.93rem; color: #1a1a2e; line-height: 1.5;
+  cursor: pointer; margin: 0;
 }
+.post-text:hover { text-decoration: underline; color: #1a85ff; }
 
+.post-media { width: 100%; max-height: 300px; object-fit: cover; }
+
+/* Action buttons */
+.post-actions {
+  display: flex; gap: 6px; margin-top: 8px;
+}
 .action-btn {
-  font-size: 0.82rem;
-  cursor: pointer;
+  display: inline-flex; align-items: center; gap: 5px;
+  background: none; border: 1.5px solid #e8eaf0;
+  border-radius: 20px; padding: 5px 12px;
+  font-size: 0.82rem; font-weight: 500; color: #555;
+  cursor: pointer; transition: all 0.18s;
+  min-width: 56px; justify-content: center;
 }
+.action-btn:hover { background: #f0f4ff; border-color: #1a85ff; color: #1a85ff; }
+.action-btn.liked { color: #e0245e; border-color: #f5c0cc; background: #fff5f7; }
+.action-btn.liked:hover { background: #ffe0e8; }
+.action-btn.reposted { color: #17bf63; border-color: #b2f0d0; background: #f0fff7; }
+.action-btn.reposted:hover { background: #d0ffe8; }
+.action-icon { font-size: 0.95rem; line-height: 1; }
 
+.delete-btn {
+  background: none; border: none; cursor: pointer;
+  font-size: 0.9rem; opacity: 0.5; transition: opacity 0.15s;
+  padding: 2px 4px;
+}
+.delete-btn:hover { opacity: 1; }
+
+/* Empty state */
+.empty-state { text-align: center; padding: 48px 16px; color: #999; }
+.empty-icon { font-size: 2.2rem; margin-bottom: 8px; }
+
+/* Media grid */
+.media-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px;
+}
+.media-item {
+  width: 100%; height: 140px; object-fit: cover; cursor: pointer;
+  transition: opacity 0.15s;
+}
+.media-item:hover { opacity: 0.85; }
+
+/* Modal overlay */
 .modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.4);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+  z-index: 1000; display: flex; align-items: center; justify-content: center;
   animation: fadeIn 0.2s ease;
 }
-
 .edit-modal {
-  width: 100%;
-  max-width: 500px;
-  animation: slideUp 0.2s ease;
+  width: 100%; max-width: 520px;
+  max-height: 90vh; overflow-y: auto;
+  background: #fff; border-radius: 18px;
+  box-shadow: 0 12px 48px rgba(0,0,0,0.18);
+  animation: slideUp 0.22s ease;
 }
 
-.edit-banner {
-  height: 100px;
-  opacity: 0.5;
+/* Modal Header */
+.edit-modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid #eee;
+  position: sticky; top: 0; background: #fff; z-index: 5;
+  border-radius: 18px 18px 0 0;
 }
+.modal-title { font-size: 1rem; font-weight: 700; margin: 0; }
+.modal-cancel-btn {
+  background: none; border: none; cursor: pointer;
+  font-size: 1rem; color: #555; width: 32px; height: 32px;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+}
+.modal-cancel-btn:hover { background: #f0f0f0; }
+.modal-save-btn {
+  background: #1a1a2e; color: #fff; border: none;
+  border-radius: 20px; padding: 7px 20px;
+  font-size: 0.88rem; font-weight: 600; cursor: pointer;
+  transition: all 0.18s; min-width: 70px;
+  display: flex; align-items: center; justify-content: center; gap: 4px;
+}
+.modal-save-btn:hover:not(:disabled) { background: #2d2d4e; }
+.modal-save-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
+/* Cover edit */
+.edit-cover-wrap { cursor: pointer; position: relative; }
+.edit-cover {
+  height: 110px;
+  background: linear-gradient(135deg, #1a85ff, #6c63ff);
+  background-size: cover; background-position: center;
+  position: relative; display: flex; align-items: center; justify-content: center;
+}
+.edit-cover-empty { color: rgba(255,255,255,0.7); font-size: 0.85rem; }
+.edit-cover-overlay {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.25); font-size: 1.4rem;
+  opacity: 0; transition: opacity 0.18s;
+}
+.edit-cover-wrap:hover .edit-cover-overlay { opacity: 1; }
+
+/* Avatar edit */
+.edit-avatar-row { margin-top: -30px; margin-bottom: 8px; }
 .edit-avatar {
-  width: 70px;
-  height: 70px;
+  width: 72px; height: 72px; border-radius: 50%;
+  border: 3px solid #fff;
+  background: #1a85ff;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; position: relative; overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
 }
+.edit-avatar-overlay {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.3); font-size: 1.1rem;
+  opacity: 0; transition: opacity 0.18s;
+}
+.edit-avatar:hover .edit-avatar-overlay { opacity: 1; }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+/* Fields */
+.edit-fields { padding-top: 8px; }
+.edit-field { margin-bottom: 16px; }
+.edit-label {
+  display: block; font-size: 0.8rem; font-weight: 600;
+  color: #555; margin-bottom: 5px;
 }
+.required { color: #e0245e; }
+.edit-input {
+  width: 100%; border: 1.5px solid #e0e0e0;
+  border-radius: 10px; padding: 9px 12px;
+  font-size: 0.9rem; outline: none; transition: border-color 0.18s;
+  resize: vertical;
+}
+.edit-input:focus { border-color: #1a85ff; }
 
-@keyframes slideUp {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { transform: translateY(24px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }

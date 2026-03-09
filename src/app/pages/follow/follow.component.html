@@ -1,67 +1,100 @@
 <div class="page-layout">
-
-  <!-- SHARED SIDEBAR -->
   <app-sidebar></app-sidebar>
 
-  <!-- MAIN CONTENT -->
   <main class="page-main">
-
-    <!-- Header -->
-    <div class="follow-header d-flex align-items-center gap-3 px-4 py-3 border-bottom sticky-top bg-white">
-      <button class="btn btn-sm btn-light rounded-circle back-btn" (click)="goBack()">←</button>
-      <h5 class="mb-0 fw-bold">Follow Management</h5>
+    <div class="sticky-top bg-white border-bottom px-4 py-3 d-flex align-items-center gap-3" style="z-index:10;">
+      <button class="btn btn-sm btn-light rounded-circle" (click)="goBack()">←</button>
+      <h5 class="fw-bold mb-0">Connections</h5>
     </div>
 
-    <!-- Tabs -->
     <div class="d-flex border-bottom px-4">
-      <button class="tab-btn me-4" [class.active]="activeTab === 'followers'" (click)="setTab('followers')">
-        Followers
-        <span class="badge bg-light text-dark ms-1">{{ followers.length }}</span>
+      <button class="tab-btn me-4" [class.active]="activeTab==='followers'" (click)="activeTab='followers'">
+        Followers <span class="badge bg-light text-dark ms-1">{{ followers.length }}</span>
       </button>
-      <button class="tab-btn" [class.active]="activeTab === 'following'" (click)="setTab('following')">
-        Following
-        <span class="badge bg-light text-dark ms-1">{{ following.length }}</span>
+      <button class="tab-btn me-4" [class.active]="activeTab==='following'" (click)="activeTab='following'">
+        Following <span class="badge bg-light text-dark ms-1">{{ following.length }}</span>
+      </button>
+      <button class="tab-btn" [class.active]="activeTab==='suggested'" (click)="activeTab='suggested'">
+        Discover
       </button>
     </div>
 
-    <!-- Followers List -->
-    <div *ngIf="activeTab === 'followers'">
-      <div class="person-item d-flex align-items-center gap-3 px-4 py-3 border-bottom"
-           *ngFor="let person of followers">
-        <img [src]="person.avatar" class="rounded-circle flex-shrink-0"
-             width="48" height="48" [alt]="person.displayName">
-        <div class="flex-grow-1">
-          <div class="fw-bold text-dark">{{ person.displayName }}</div>
-          <div class="text-muted small">@{{ person.handle }}</div>
-          <div class="text-muted small">{{ person.bio }}</div>
+    <!-- Loading -->
+    <div class="text-center py-5" *ngIf="loading">
+      <div class="spinner-border text-primary"></div>
+    </div>
+
+    <!-- Followers Tab -->
+    <div *ngIf="activeTab === 'followers' && !loading">
+      <div class="user-item border-bottom px-4 py-3 d-flex align-items-center gap-3"
+        *ngFor="let user of followers">
+        <img [src]="user.profile_picture_url || 'https://i.pravatar.cc/44?u=' + user.username"
+          class="rounded-circle flex-shrink-0" width="44" height="44"
+          style="cursor:pointer;object-fit:cover;" (click)="goToProfile(user.username)">
+        <div class="flex-grow-1" style="cursor:pointer;" (click)="goToProfile(user.username)">
+          <div class="fw-semibold">{{ user.first_name }} {{ user.last_name }}</div>
+          <div class="text-muted small">@{{ user.username }}</div>
+          <div class="text-muted small text-truncate" style="max-width:220px;" *ngIf="user.bio">{{ user.bio }}</div>
         </div>
-        <button class="btn btn-sm rounded-pill px-3 fw-medium"
-          [class.btn-primary]="!person.isFollowing"
-          [class.btn-outline-secondary]="person.isFollowing"
-          (click)="toggleFollow(person)">
-          {{ person.isFollowing ? 'Following' : 'Follow Back' }}
+        <button class="btn btn-sm rounded-pill px-3 fw-semibold"
+          [class.btn-outline-primary]="!user.isFollowingBack"
+          [class.btn-outline-secondary]="user.isFollowingBack"
+          (click)="!user.isFollowingBack && followBack(user)">
+          {{ user.isFollowingBack ? 'Following' : 'Follow Back' }}
         </button>
+      </div>
+      <div class="text-center py-5 text-muted" *ngIf="followers.length === 0">
+        <div style="font-size:2rem;">👥</div>
+        <p>No followers yet</p>
       </div>
     </div>
 
-    <!-- Following List -->
-    <div *ngIf="activeTab === 'following'">
-      <div class="person-item d-flex align-items-center gap-3 px-4 py-3 border-bottom"
-           *ngFor="let person of following">
-        <img [src]="person.avatar" class="rounded-circle flex-shrink-0"
-             width="48" height="48" [alt]="person.displayName">
-        <div class="flex-grow-1">
-          <div class="fw-bold text-dark">{{ person.displayName }}</div>
-          <div class="text-muted small">@{{ person.handle }}</div>
-          <div class="text-muted small">{{ person.bio }}</div>
+    <!-- Following Tab -->
+    <div *ngIf="activeTab === 'following' && !loading">
+      <div class="user-item border-bottom px-4 py-3 d-flex align-items-center gap-3"
+        *ngFor="let user of following">
+        <img [src]="user.profile_picture_url || 'https://i.pravatar.cc/44?u=' + user.username"
+          class="rounded-circle flex-shrink-0" width="44" height="44"
+          style="cursor:pointer;object-fit:cover;" (click)="goToProfile(user.username)">
+        <div class="flex-grow-1" style="cursor:pointer;" (click)="goToProfile(user.username)">
+          <div class="fw-semibold">{{ user.first_name }} {{ user.last_name }}</div>
+          <div class="text-muted small">@{{ user.username }}</div>
+          <div class="text-muted small text-truncate" style="max-width:220px;" *ngIf="user.bio">{{ user.bio }}</div>
         </div>
-        <button class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-medium"
-          (click)="toggleFollow(person)">
-          Unfollow
-        </button>
+        <button class="btn btn-sm btn-outline-danger rounded-pill px-3"
+          (click)="unfollow(user)">Unfollow</button>
+      </div>
+      <div class="text-center py-5 text-muted" *ngIf="following.length === 0">
+        <div style="font-size:2rem;">🔍</div>
+        <p>Not following anyone yet. Discover people below!</p>
       </div>
     </div>
 
+    <!-- Suggested / Discover Tab -->
+    <div *ngIf="activeTab === 'suggested' && !loading">
+      <div class="px-4 py-3 text-muted small border-bottom">People you might know</div>
+      <div class="user-item border-bottom px-4 py-3 d-flex align-items-center gap-3"
+        *ngFor="let user of suggestedUsers">
+        <img [src]="user.profile_picture_url || 'https://i.pravatar.cc/44?u=' + user.username"
+          class="rounded-circle flex-shrink-0" width="44" height="44"
+          style="cursor:pointer;object-fit:cover;" (click)="goToProfile(user.username)">
+        <div class="flex-grow-1" style="cursor:pointer;" (click)="goToProfile(user.username)">
+          <div class="fw-semibold">{{ user.first_name }} {{ user.last_name }}</div>
+          <div class="text-muted small">@{{ user.username }}</div>
+          <div class="text-muted small text-truncate" style="max-width:220px;" *ngIf="user.bio">{{ user.bio }}</div>
+        </div>
+        <button class="btn btn-sm btn-dark rounded-pill px-3 fw-semibold"
+          [disabled]="user.isFollowing"
+          (click)="followSuggested(user)">
+          {{ user.isFollowing ? 'Following' : 'Follow' }}
+        </button>
+      </div>
+      <div class="text-center py-5 text-muted" *ngIf="suggestedUsers.length === 0">
+        <div style="font-size:2rem;">✅</div>
+        <p>You're following everyone!</p>
+      </div>
+    </div>
   </main>
+
   <app-right-sidebar></app-right-sidebar>
 </div>

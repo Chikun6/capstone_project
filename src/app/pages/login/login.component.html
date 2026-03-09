@@ -2,19 +2,19 @@
   <!-- Left Panel -->
   <div class="left-panel d-none d-md-flex flex-column justify-content-center align-items-start px-5">
     <h1 class="display-4 fw-bold text-primary mb-2">Sign in</h1>
-    <p class="fs-5 fw-medium text-dark-50">Enter your username and password</p>
+    <p class="fs-5 fw-medium text-dark-50">Enter your username or email and password</p>
   </div>
 
   <!-- Right Panel -->
   <div class="right-panel d-flex flex-column justify-content-center align-items-center px-4 px-md-5 flex-grow-1">
     <div class="form-card w-100" style="max-width: 520px;">
 
-
       <form [formGroup]="form" (ngSubmit)="onSubmit()">
-        <!-- Account -->
+        <!-- Identifier -->
         <div class="mb-3">
-          <label class="form-label text-secondary  fw-semibold">Account Login</label>
-          <div class="input-group input-group-custom">
+          <label class="form-label text-secondary fw-semibold">Account Login</label>
+          <div class="input-group input-group-custom"
+            [class.border-danger]="f['identifier'].invalid && f['identifier'].touched">
             <span class="input-group-text bg-transparent border-0 ps-3 text-primary">@</span>
             <input
               type="text"
@@ -23,11 +23,15 @@
               formControlName="identifier"
             />
           </div>
+          <small class="text-danger" *ngIf="f['identifier'].touched && f['identifier'].errors?.['required']">
+            Please enter your email or username.
+          </small>
         </div>
 
         <!-- Password -->
         <div class="mb-4">
-          <div class="input-group input-group-custom">
+          <div class="input-group input-group-custom"
+            [class.border-danger]="f['password'].invalid && f['password'].touched">
             <span class="input-group-text bg-transparent border-0 ps-3 text-muted">🔒</span>
             <input
               [type]="showPassword ? 'text' : 'password'"
@@ -35,10 +39,16 @@
               placeholder="Password"
               formControlName="password"
             />
-            <span class="input-group-text bg-transparent border-0 pe-3">
-              <a href="#" class="text-primary text-decoration-none small fw-medium" (click)="$event.preventDefault()">Forgot?</a>
+            <span class="input-group-text bg-transparent border-0 pe-3" style="cursor:pointer" (click)="showPassword=!showPassword">
+              {{ showPassword ? '🙈' : '👁️' }}
             </span>
           </div>
+          <small class="text-danger" *ngIf="f['password'].touched && f['password'].errors?.['required']">
+            Password is required.
+          </small>
+          <small class="text-danger" *ngIf="f['password'].touched && f['password'].errors?.['minlength']">
+            Password must be at least 6 characters.
+          </small>
         </div>
 
         <!-- Error -->

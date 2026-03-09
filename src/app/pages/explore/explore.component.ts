@@ -1,45 +1,94 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { PostService } from '../../services/post.service';
+import { UserService, User } from '../../services/user.service';
+import { Post } from '../../models/post.model';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-explore',
   templateUrl: './explore.component.html',
   styleUrls: ['./explore.component.css']
 })
-export class ExploreComponent {
+export class ExploreComponent implements OnInit {
   searchQuery = '';
-  activeFilter = 'top';
+  activeFilter: 'tweets' | 'users' = 'tweets';
+  tweetResults: Post[] = [];
+  userResults: User[] = [];
+  searching = false;
+
+  private searchSubject = new Subject<string>();
 
   trendingTopics = [
-    { rank: 1, title: 'F This Movie Fest', category: 'Entertainment', badge: 'Hot', posts: '12.4k' },
-    { rank: 2, title: 'Six Nations', category: 'Sports', badge: 'New', posts: '8.1k' },
-    { rank: 3, title: 'Caturday', category: 'Animals', badge: '', posts: '5.6k' },
-    { rank: 4, title: 'Arsenal', category: 'Sports', badge: '', posts: '4.9k' },
-    { rank: 5, title: 'F1 Qualifying', category: 'Sports', badge: '', posts: '3.2k' },
-    { rank: 6, title: 'World Book Day', category: 'Education', badge: 'New', posts: '2.8k' },
-    { rank: 7, title: 'Hammer Films', category: 'Entertainment', badge: '', posts: '1.9k' },
-    { rank: 8, title: 'Kelsey Plum', category: 'Sports', badge: '', posts: '1.4k' },
+    { rank: 1, title: '#AI', category: 'Technology', posts: '12.4k' },
+    { rank: 2, title: '#Angular', category: 'Tech', posts: '8.1k' },
+    { rank: 3, title: '#OpenSource', category: 'Dev', posts: '5.6k' },
+    { rank: 4, title: '#SpringBoot', category: 'Java', posts: '4.9k' },
+    { rank: 5, title: '#WebDev', category: 'Dev', posts: '3.2k' },
+    { rank: 6, title: '#Startup', category: 'Business', posts: '2.8k' },
+    { rank: 7, title: '#MachineLearning', category: 'AI', posts: '1.9k' },
+    { rank: 8, title: '#React', category: 'Frontend', posts: '1.4k' },
   ];
 
-  feeds = [
-    { name: 'Science', handle: 'bossett.social', desc: 'Curated feed from professional scientists and science communicators.', likes: '29.2k', icon: '🔬' },
-    { name: 'SciArt', handle: 'flyingtrilobite.com', desc: 'The intersection of art and science — illustration, wildlife art, paleoart.', likes: '18.5k', icon: '🎨' },
-    { name: 'Tech News', handle: 'technews.bsky', desc: 'Latest in technology, AI, software and startups.', likes: '41.0k', icon: '💻' },
-    { name: 'Photography', handle: 'photofeed.social', desc: 'Beautiful photography from around the world.', likes: '22.3k', icon: '📸' },
-  ];
+  constructor(
+    private postService: PostService,
+    private userService: UserService,
+    private router: Router
+  ) {}
 
-  mockResults = [
-    { author: 'Nature Lens', handle: 'naturephotos.bsky.social', time: '3h', text: 'Captured this incredible sunrise over the mountains this morning. Nature never stops amazing me 🏔️', likes: 1200, reposts: 456 },
-    { author: 'Tech Daily', handle: 'techdaily.bsky.social', time: '1h', text: 'Big news in AI today — new models dropping left and right. The space is moving so fast 🚀 #AI #Tech', likes: 890, reposts: 234 },
-    { author: 'Sports Hub', handle: 'sportshub.bsky.social', time: '30m', text: 'Six Nations update: Ireland leading in an absolute thriller of a match! #SixNations', likes: 3400, reposts: 812 },
-  ];
-
-  get filteredResults() {
-    if (!this.searchQuery) return this.mockResults;
-    return this.mockResults.filter(r =>
-      r.text.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-      r.author.toLowerCase().includes(this.searchQuery.toLowerCase())
-    );
+  ngOnInit() {
+    this.searchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged()
+    ).subscribe(query => this.doSearch(query));
   }
 
-  setFilter(f: string) { this.activeFilter = f; }
+  onSearchInput() {
+    this.searchSubject.next(this.searchQuery);
+  }
+
+  doSearch(query: string) {
+    if (!query.trim()) {
+      this.tweetResults = [];
+      this.userResults = [];
+      return;
+    }
+    this.searching = true;
+    if (this.activeFilter === 'tweets') {
+      this.postService.searchTweets(query).subscribe(results => {
+        this.tweetResults = results;
+        this.searching = false;
+      });
+    } else {
+      this.userService.searchUsers(query).subscribe(results => {
+        this.userResults = results;
+        this.searching = false;
+      });
+    }
+  }
+
+  setFilter(f: 'tweets' | 'users') {
+    this.activeFilter = f;
+    if (this.searchQuery.trim()) this.doSearch(this.searchQuery);
+  }
+
+  searchTrend(tag: string) {
+    this.searchQuery = tag;
+    this.activeFilter = 'tweets';
+    this.doSearch(tag);
+  }
+
+  goToUser(username: string) {
+    this.router.navigate(['/user', username]);
+  }
+
+  goToTweet(post: Post) {
+    this.router.navigate(['/tweet', post.id]);
+  }
+
+  formatCount(n: number): string {
+    if (n >= 1000) return (n / 1000).toFixed(1) + 'k';
+    return n?.toString() || '0';
+  }
 }

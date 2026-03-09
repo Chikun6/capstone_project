@@ -1,0 +1,131 @@
+<div class="page-layout">
+  <app-sidebar></app-sidebar>
+
+  <main class="page-main">
+
+    <div class="text-center py-5" *ngIf="loading">
+      <div style="font-size:2rem;">🐦</div>
+      <p class="text-muted mt-2">Loading profile...</p>
+    </div>
+
+    <div class="text-center py-5" *ngIf="!loading && !user">
+      <div style="font-size:2rem;">😕</div>
+      <p class="text-muted mt-2">User not found</p>
+      <button class="btn btn-primary rounded-pill px-4" (click)="goBack()">Go Home</button>
+    </div>
+
+    <div *ngIf="!loading && user">
+      <!-- Header -->
+      <div class="d-flex align-items-center gap-3 px-4 py-3 border-bottom sticky-top bg-white">
+        <button class="btn btn-sm btn-light rounded-circle" style="width:34px;height:34px;" (click)="goBack()">←</button>
+        <div>
+          <h5 class="mb-0 fw-bold">{{ user.first_name }} {{ user.last_name }}</h5>
+          <small class="text-muted">{{ posts.length }} posts</small>
+        </div>
+      </div>
+
+      <!-- Banner -->
+      <div style="height:140px;"
+        [style.background-image]="user.cover_photo_url ? 'url(' + user.cover_photo_url + ')' : 'linear-gradient(135deg,#1da1f2,#0d47a1)'"
+        [style.background-size]="'cover'"
+        [style.background-position]="'center'">
+      </div>
+
+      <!-- Avatar + Follow Button -->
+      <div class="d-flex justify-content-between align-items-end px-4" style="margin-top:-40px;">
+        <img [src]="user.profile_picture_url || 'https://i.pravatar.cc/82?u=' + user.username"
+          class="rounded-circle border border-4 border-white"
+          width="82" height="82" [alt]="user.username"
+          style="object-fit:cover;">
+        <button *ngIf="!isOwnProfile"
+          class="btn rounded-pill px-4 fw-semibold mb-2"
+          [class.btn-dark]="!isFollowing"
+          [class.btn-outline-secondary]="isFollowing"
+          (click)="toggleFollow()">
+          {{ isFollowing ? 'Following' : 'Follow' }}
+        </button>
+        <button *ngIf="isOwnProfile"
+          class="btn btn-outline-secondary rounded-pill px-4 fw-medium mb-2"
+          routerLink="/profile">
+          Edit Profile
+        </button>
+      </div>
+
+      <!-- Info -->
+      <div class="px-4 pt-2 pb-3 border-bottom">
+        <h5 class="fw-bold mb-0">{{ user.first_name }} {{ user.last_name }}</h5>
+        <div class="text-muted small mb-2">@{{ user.username }}</div>
+        <p class="mb-2" *ngIf="user.bio">{{ user.bio }}</p>
+        <div class="d-flex gap-3 text-muted small mb-2" *ngIf="user.location || user.website">
+          <span *ngIf="user.location">📍 {{ user.location }}</span>
+          <span *ngIf="user.website">
+            🔗 <a [href]="user.website" target="_blank" class="text-primary text-decoration-none">{{ user.website }}</a>
+          </span>
+        </div>
+        <div class="d-flex gap-4">
+          <span class="small"><strong>{{ followingCount }}</strong> <span class="text-muted">Following</span></span>
+          <span class="small"><strong>{{ followersCount }}</strong> <span class="text-muted">Followers</span></span>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="d-flex border-bottom px-4">
+        <button class="tab-btn me-4" [class.active]="activeTab==='posts'" (click)="setTab('posts')">Posts</button>
+        <button class="tab-btn me-4" [class.active]="activeTab==='media'" (click)="setTab('media')">Media</button>
+        <button class="tab-btn" [class.active]="activeTab==='likes'" (click)="setTab('likes')">Likes</button>
+      </div>
+
+      <!-- Posts Tab -->
+      <div *ngIf="activeTab === 'posts'">
+        <div class="post-item border-bottom px-4 py-3" *ngFor="let post of posts">
+          <div class="d-flex gap-3">
+            <img [src]="user.profile_picture_url || 'https://i.pravatar.cc/40?u=' + user.username"
+              class="rounded-circle flex-shrink-0" width="40" height="40" style="object-fit:cover;">
+            <div class="flex-grow-1">
+              <div class="d-flex gap-2 mb-1">
+                <span class="fw-bold small">{{ user.first_name }} {{ user.last_name }}</span>
+                <span class="text-muted small">· {{ post.createdAt }}</span>
+              </div>
+              <p class="mb-2" style="font-size:0.95rem;cursor:pointer;" (click)="goToTweet(post)">{{ post.text }}</p>
+              <!-- Media -->
+              <div *ngIf="post.mediaUrls && post.mediaUrls.length > 0" class="mb-2">
+                <img *ngFor="let url of post.mediaUrls" [src]="url"
+                  class="rounded-3 w-100" style="max-height:300px;object-fit:cover;">
+              </div>
+              <div class="d-flex gap-4 text-muted" style="font-size:0.82rem;">
+                <span style="cursor:pointer;" (click)="goToTweet(post)">💬 {{ formatCount(post.replies) }}</span>
+                <span>🔁 {{ formatCount(post.reposts) }}</span>
+                <button class="action-btn border-0 bg-transparent p-0" [class.liked]="post.liked" (click)="toggleLike(post)">
+                  {{ post.liked ? '❤️' : '🤍' }} {{ formatCount(post.likes) }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="text-center py-5 text-muted" *ngIf="posts.length === 0">
+          <p>No posts yet</p>
+        </div>
+      </div>
+
+      <!-- Media Tab -->
+      <div *ngIf="activeTab === 'media'" class="p-3">
+        <div class="media-grid-layout" *ngIf="mediaUrls.length > 0">
+          <img *ngFor="let url of mediaUrls" [src]="url"
+            class="media-grid-item rounded-2"
+            style="object-fit:cover;width:100%;height:150px;">
+        </div>
+        <div class="text-center text-muted py-5" *ngIf="mediaUrls.length === 0">
+          <div style="font-size:2rem;">🖼️</div>
+          <p>No media yet</p>
+        </div>
+      </div>
+
+      <div *ngIf="activeTab === 'likes'" class="text-center text-muted py-5">
+        <div style="font-size:2.5rem;">📭</div>
+        <p class="mt-2">Likes are private</p>
+      </div>
+    </div>
+  </main>
+
+  <app-right-sidebar></app-right-sidebar>
+</div>
